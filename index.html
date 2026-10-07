@@ -426,6 +426,23 @@ html{zoom:var(--z,1)}
 }
 #ovl:not(:empty){position:fixed;inset:0;z-index:49;background:var(--bg)}
 .zc{height:54px;overflow:hidden}.seat .st{height:16px;line-height:16px}
+#capcol{display:none}
+@media (min-width:880px){
+  body.showmode #app{max-width:1560px;margin:0}
+  body.showmode.deskboard #capcol{display:flex;flex-direction:column;flex:0 0 330px;min-height:0;border-left:1px solid var(--line);padding:14px 14px 10px;background:#FBF8F2}
+  body.showmode #cap{display:none}
+  .cc-h{font-weight:800;font-size:15px;color:#1F1B16;margin-bottom:8px}
+  .cc-now{background:#1F1B16;color:#F5F1EA;border-radius:14px;padding:14px 16px;font-size:17.5px;line-height:1.65;box-shadow:0 8px 20px rgba(0,0,0,.18)}
+  .cc-now b{color:#FFD27A}
+  .cc-now.flash{animation:ccin .45s ease-out}
+  @keyframes ccin{from{opacity:.25;transform:translateY(6px)}to{opacity:1;transform:none}}
+  .cc-g{display:block;font-size:11.5px;letter-spacing:.1em;font-weight:800;color:#F2B33D;margin-bottom:4px}
+  .cc-sub{font-size:11.5px;color:var(--muted);font-weight:700;letter-spacing:.08em;margin:14px 0 6px}
+  .cc-list{flex:1;min-height:0;overflow-y:auto}
+  .cc-item{font-size:13.5px;line-height:1.6;color:#4A433B;padding:8px 2px;border-bottom:1px solid var(--line)}
+  .cc-item .cc-g{color:#9A7A2C}
+  .cc-item b{color:#1F1B16}
+}
 .pickhead{display:none}
 .vgrid{display:grid;grid-template-columns:1fr 1fr;gap:6px}.vgrid .vbtn{margin:0}
 .gridcard .tb{display:inline-block;margin-top:8px;color:#fff;font-size:12.5px;padding:3px 10px;border-radius:12px;font-weight:700}
@@ -471,6 +488,7 @@ html{zoom:var(--z,1)}
       </div>
       <div id="ctx" class="desk"></div>
     </section>
+    <aside id="capcol"><div class="cc-h">🎬 解說</div><div class="cc-now"><span class="cc-g">開場</span>按下播放後，這裡會說明每一格發生了什麼。</div><div class="cc-sub">之前的解說</div><div class="cc-list"></div></aside>
   </div>
 </div>
 <div id="ovl"></div>
@@ -496,7 +514,18 @@ async function autoClick(sel,ms){
   el.classList.add('autohl'); await pausable(650*SPEED); if(document.body.contains(el)) el.click();
 }
 function cap(html,ms=5200){
-  if(!S.show||!html) return; let c=$('#cap'); if(!c){ c=document.createElement('div'); c.id='cap'; document.body.appendChild(c); }
+  if(!S.show||!html) return;
+  // 解說欄（電腦）：最新一則大字，之前的依格數保留
+  const col=$('#capcol');
+  if(col){
+    const g=G[S.gi], where=S.ended?'結尾':g?`第 ${g.n} 格`:'開場';
+    const cur=col.querySelector('.cc-now'), list=col.querySelector('.cc-list');
+    if(cur.dataset.html){ const it=document.createElement('div'); it.className='cc-item'; it.innerHTML=`<span class="cc-g">${cur.dataset.where}</span>${cur.dataset.html}`; list.prepend(it); }
+    cur.dataset.html=html; cur.dataset.where=where; cur.innerHTML=`<span class="cc-g">${where}</span>${html}`;
+    cur.classList.remove('flash'); void cur.offsetWidth; cur.classList.add('flash');
+  }
+  // 手機：浮動字幕
+  let c=$('#cap'); if(!c){ c=document.createElement('div'); c.id='cap'; document.body.appendChild(c); }
   c.innerHTML=`<span class="cl">🎬 解說</span>${html}`; c.classList.add('on'); clearTimeout(cap.t); cap.t=setTimeout(()=>c.classList.remove('on'),Math.max(1500,ms*SPEED));
 }
 const SHOWCAP={
@@ -1822,7 +1851,7 @@ function intro(){
     function startShow(){
       S.show=true; S.mode='multi'; S.research=false; S.physical=false; setupPlayers(['小安']);
       $('#pause').classList.remove('hidden'); $('#idpill').classList.add('hidden');
-      document.body.classList.add('showmode'); pStory();
+      document.body.classList.add('showmode'); fitZoom(); pStory();
       cap('展示版：<b>小安</b>是示範玩家，和 3 位同學同桌。所有動作都會自動進行，可以隨時暫停。',7000);
     }
     if(Q.has('show')&&!AUTO){ startShow(); return; }
@@ -1858,7 +1887,8 @@ function layout(){
 function fitZoom(){
   // 大螢幕等比放大：以 1280×800 為基準，手機與小螢幕維持 1
   const w=innerWidth, h=innerHeight;
-  const z = w<880 ? 1 : Math.max(1, Math.min(w/1280, h/800, 2.2));
+  const base = document.body.classList.contains('showmode') ? 1560 : 1280;
+  const z = w<880 ? 1 : Math.max(1, Math.min(w/base, h/800, 2.2));
   document.documentElement.style.setProperty('--z', z.toFixed(3));
 }
 fitZoom(); addEventListener('resize', ()=>{ fitZoom(); layout(); });
