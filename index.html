@@ -410,6 +410,16 @@ html{zoom:var(--z,1)}
   body.deskboard .toast{left:auto!important;right:16px;transform:none;max-width:352px}
   body.deskboard.showmode .toast{bottom:calc(150px + var(--i,0) * 62px)!important}body.deskboard .toast{bottom:calc(28px + var(--i,0) * 62px)}
 }
+.gridcard{position:absolute;inset:auto;left:50%;top:58px;transform:translateX(-50%);display:block;background:rgba(255,255,255,.97);border-radius:16px;padding:12px 24px 13px;box-shadow:0 10px 28px rgba(20,30,45,.22);z-index:20;white-space:nowrap;animation:gcin .28s cubic-bezier(.3,1.3,.6,1);transition:opacity .25s,transform .25s}
+.gridcard.out{opacity:0;transform:translate(-50%,-8px)}
+.gridcard .t{font-size:22px!important}
+@keyframes gcin{from{opacity:0;transform:translate(-50%,-10px) scale(.96)}to{opacity:1;transform:translateX(-50%)}}
+#phone{position:relative}
+@media (max-width:879px){
+  body.picking #sheet{position:fixed;left:0;right:0;bottom:0;z-index:30;max-height:72dvh;overflow-y:auto;border-radius:18px 18px 0 0;box-shadow:0 -10px 28px rgba(0,0,0,.2);animation:sheetin .22s ease-out}
+  body.picking .chips{max-height:none}
+  @keyframes sheetin{from{transform:translateY(30px);opacity:.6}to{transform:none;opacity:1}}
+}
 .vgrid{display:grid;grid-template-columns:1fr 1fr;gap:6px}.vgrid .vbtn{margin:0}
 .gridcard .tb{display:inline-block;margin-top:8px;color:#fff;font-size:12.5px;padding:3px 10px;border-radius:12px;font-weight:700}
 @media (max-width:879px){#top{flex-wrap:wrap;gap:6px 8px;padding:8px 12px 6px}#prog{order:9;flex-basis:100%}#gridlbl{margin-right:auto}#heat{margin-top:6px;padding:4px 8px}#heatbar{height:7px;margin-top:3px}}
@@ -1219,7 +1229,7 @@ async function gridCard(g){
   const tag = g.hot?'<div class="tb" style="background:var(--red)">🔥 熱格・每人 10 秒</div>':g.dm?'<div class="tb" style="background:#7A5BA8">💬 私訊格</div>':g.ty==='v'?'<div class="tb" style="background:#2F7F86">📊 投票格</div>':'';
   const d=document.createElement('div'); d.className='gridcard';
   d.innerHTML=`<div class="in"><div class="n">第 ${g.n} 格 / 18</div><div class="t">${g.t}</div>${tag}${g.ty==='s'?'<div class="mini" style="margin-top:6px">劇情格：只看，不用行動</div>':''}</div>`;
-  document.body.appendChild(d); await sleep(900); d.remove();
+  $('#phone').appendChild(d); await sleep(1000); d.classList.add('out'); await sleep(260); d.remove();
 }
 function waitBtn(label){
   return new Promise(res=>{
