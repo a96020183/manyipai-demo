@@ -186,7 +186,7 @@ button{font-family:inherit;font-size:inherit;color:inherit;cursor:pointer;border
 .pp .av{width:34px;height:34px;border-radius:50%;display:grid;place-items:center;color:#fff;font-weight:700;flex:none}
 .tm{background:#F1ECE3;border-radius:20px;padding:4px 10px;font-size:13.5px}
 @media (min-width:880px){.toast{top:auto;bottom:28px}}
-@media (max-width:879px){body.picking #table{display:none}body.picking .chips{max-height:none}}
+
 .idc .in{position:relative;width:100%;height:100%;transition:transform .7s;transform-style:preserve-3d}
 .idc.flip .in{transform:rotateY(180deg)}
 .idc .f,.idc .b{position:absolute;inset:0;backface-visibility:hidden;border-radius:18px;padding:20px}
@@ -416,10 +416,15 @@ html{zoom:var(--z,1)}
 @keyframes gcin{from{opacity:0;transform:translate(-50%,-10px) scale(.96)}to{opacity:1;transform:translateX(-50%)}}
 #phone{position:relative}
 @media (max-width:879px){
-  body.picking #sheet{position:fixed;left:0;right:0;bottom:0;z-index:30;max-height:72dvh;overflow-y:auto;border-radius:18px 18px 0 0;box-shadow:0 -10px 28px rgba(0,0,0,.2);animation:sheetin .22s ease-out}
+  body.picking #panel{position:fixed;left:0;right:0;bottom:0;z-index:30;max-height:72dvh;overflow-y:auto;background:var(--bg);padding:10px 14px calc(14px + env(safe-area-inset-bottom));border-radius:18px 18px 0 0;box-shadow:0 -10px 28px rgba(0,0,0,.2);animation:sheetin .22s ease-out}
+  .pickhead{display:block!important;font-size:13px;color:var(--muted);margin-bottom:4px}
+  .zc{height:44px;overflow:hidden}
   body.picking .chips{max-height:none}
+  #sheet{min-height:178px}
+  .tip{margin-top:4px}
   @keyframes sheetin{from{transform:translateY(30px);opacity:.6}to{transform:none;opacity:1}}
 }
+.pickhead{display:none}
 .vgrid{display:grid;grid-template-columns:1fr 1fr;gap:6px}.vgrid .vbtn{margin:0}
 .gridcard .tb{display:inline-block;margin-top:8px;color:#fff;font-size:12.5px;padding:3px 10px;border-radius:12px;font-weight:700}
 @media (max-width:879px){#top{flex-wrap:wrap;gap:6px 8px;padding:8px 12px 6px}#prog{order:9;flex-basis:100%}#gridlbl{margin-right:auto}#heat{margin-top:6px;padding:4px 8px}#heatbar{height:7px;margin-top:3px}}
@@ -979,7 +984,8 @@ function playerTurn(g,p){
       if(reds.length) setTimeout(()=>bubble(pick(reds),pick(['你也這樣覺得吧？','你覺得呢？','應該就是這樣吧？','欸，換你了'])),250); }
     const head = solo()?'':`<div class="whoturn"><span class="em">${p.em}</span>${esc(p.name)} 的回合</div>`;
     if(g.ty==='v'){ // 投票格
-      panel(`${head}<p class="mini" style="margin:2px 0 4px">${solo()?'你':'你們'}的票會即時出現在班群的投票裡，後面的人都看得到。</p>
+      document.body.classList.add('picking');
+      panel(`<div class="pickhead">${$('#status').innerHTML}</div>${head}<p class="mini" style="margin:2px 0 4px">${solo()?'你':'你們'}的票會即時出現在班群的投票裡，後面的人都看得到。</p>
         <div class="vgrid">${VOTE_OPTS.map((o,i)=>`<button class="vbtn ${o.col}" data-i="${i}">${o.col==='red'?'🔴 ':o.col==='yel'?'🟡 ':'🟢 '}${o.t}</button>`).join('')}</div>`);
       requestAnimationFrame(scrollChat);
       $('#panel').querySelectorAll('.vbtn').forEach(b=>b.onclick=()=>finish(voteAct(VOTE_OPTS[+b.dataset.i])));
@@ -1011,7 +1017,7 @@ function playerTurn(g,p){
           ${solo()?mine.map((x,i)=>`<button class="chip yel" data-k="s${i}">🔍 我剛問到：${esc(x.s)}</button>`).join(''):(mine.length?`<button class="chip yel" data-k="S0">🔍 公開一條我查到的線索</button>`:'')}</div>`;
       const grpG=`<div class="cg"><div class="h" style="color:var(--grn)">🟢 綠：先阻止攻擊或擴散</div>${C.grn.map((c,i)=>`<button class="chip grn" data-k="g${i}">${esc(c)}</button>`).join('')}</div>`;
       const grps=[grpR,grpY,grpG].sort(()=>Math.random()-.5).join(''); document.body.classList.add('picking');
-      panel(`${head}${solo()?'':'<p class="mini" style="margin:0 0 4px">先用嘴巴講，再選最接近的一張：</p>'}<div class="chips">${grps}</div><div class="row2"><button class="btn ghost" id="back">← 換個行動</button></div>`);
+      panel(`<div class="pickhead">${$('#status').innerHTML}</div>${head}${solo()?'':'<p class="mini" style="margin:0 0 4px">先用嘴巴講，再選最接近的一張：</p>'}<div class="chips">${grps}</div><div class="row2"><button class="btn ghost" id="back">← 換個行動</button></div>`);
       $('#back').onclick=main; requestAnimationFrame(scrollChat);
       $('#panel').querySelectorAll('.chip').forEach(b=>b.onclick=()=>{
         const k=b.dataset.k, i=+k.slice(1);
@@ -1030,8 +1036,8 @@ function playerTurn(g,p){
       renderCtx(); finish({a:'chk'});
     };
     const sprConfirm = ()=>{
-      const n18=g.n===18, opts=fwOptions(g);
-      panel(`${head}<p style="margin:6px 0 2px"><b>要把哪一則轉給別的群組？</b></p>
+      const n18=g.n===18, opts=fwOptions(g); document.body.classList.add('picking');
+      panel(`<div class="pickhead">${$('#status').innerHTML}</div>${head}<p style="margin:6px 0 2px"><b>要把哪一則轉給別的群組？</b></p>
         <p class="mini" style="margin:0 0 4px">${n18?'完整對話會沿著原本的路往外推一環，但不保證每個看過舊版本的人都會看到。':'轉出去的東西，之後收不回來。'}</p>
         ${opts.map((o,i)=>`<button class="vbtn ${o.k==='full'?'grn':o.k==='red'||o.k==='old'?'red':'yel'}" data-i="${i}" style="border-color:var(--line);color:var(--ink)">${esc(o.l)}</button>`).join('')}
         <div class="row2"><button class="btn ghost" id="back">← 換個行動</button></div>`);
