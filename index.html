@@ -451,6 +451,17 @@ html{zoom:var(--z,1)}
 .spechead button{background:#F3EEE6;color:#17202B;border-radius:10px;padding:6px 12px;font-weight:800}
 .specbox iframe{flex:1;border:0;width:100%;background:var(--bg)}
 @media (max-width:879px){.specbox{width:100vw;height:100dvh;border-radius:0}}
+body.physical #board{display:none!important}
+body.physical #prog{display:flex!important}
+@media (min-width:880px){body.physical #side{flex:0 0 400px}body.physical #phone{flex:1 1 auto!important}}
+body.bigtext .m .bb{font-size:18.5px;line-height:1.55}
+body.bigtext .m .nm{font-size:13.5px}
+body.bigtext .story{font-size:17.5px}
+body.bigtext .sys span{font-size:14px}
+body.bigtext .shot .row .t{font-size:16.5px}
+body.bigtext .leakshot .t{font-size:16px}
+body.bigtext .poll .pq{font-size:16px}body.bigtext .po{font-size:15.5px}
+.ra{width:100%;background:#FFF6D9;border:1px solid #F0D98C;border-radius:10px;padding:6px 10px;color:#6B5310;font-size:14px;margin-bottom:4px}
 .pickhead{display:none}
 .vgrid{display:grid;grid-template-columns:1fr 1fr;gap:6px}.vgrid .vbtn{margin:0}
 .gridcard .tb{display:inline-block;margin-top:8px;color:#fff;font-size:12.5px;padding:3px 10px;border-radius:12px;font-weight:700}
@@ -753,6 +764,7 @@ const tileIcon = g => g.ty==='r'?'★':g.ty==='v'?'📊':g.dm?'💬':g.hot?'🔥
 const TSHORT=['截圖','走廊','第一波','以前','限動','做與說','又有人','沒回答','傳圖者','另一版本','同一限動','投票','被忽略','那句話','分工','說明','真相','之後'];
 const tilePos = n => n<=7?[1,n]:n===8?[2,7]:n===9?[3,7]:n<=16?[4,7-(n-10)]:n===17?[3,1]:[2,1];
 function buildProg(){
+  document.querySelectorAll('#board .bt').forEach(x=>x.remove());
   $('#prog').innerHTML = G.map(g=>`<b class="tile ${tileType(g)}" title="第${g.n}格 ${g.t}">${tileIcon(g)||g.n}</b>`).join('');
   const c=$('#bcenter');
   G.forEach(g=>{ const [r,cc]=tilePos(g.n); const b=document.createElement('div'); b.className='bt '+tileType(g); b.style.gridRow=r; b.style.gridColumn=cc;
@@ -1289,6 +1301,8 @@ async function runGrid(g){
   setProg(); renderCtx(); $('#clock').textContent=g.clk; status(''); panel('');
   await gridCard(g);
   cap(SHOWCAP[g.n]);
+  if(S.players.length) $('#firstlbl').textContent=`🚩 本格首位：${S.players[S.first].name}`;
+  if(readAloud()) status(readAloud());
   S.turn=null; clearZone(); renderSeats();
   if(g.ty==='r'){ status('第 17 格：真相出現'); await reveal(); await waitBtn('進入最後一格 →'); return; }
   S.players.forEach(p=>{ if(p.isHuman) return; const P=PERS[p.ident.k];
@@ -1296,7 +1310,7 @@ async function runGrid(g){
   if(g.n===11) await leakEvent();
   for(const m of g.msgs()) await post(m);
   if(g.dm) await dmEvent();
-  if(g.ty==='s'){ status('劇情格：這一格只看，不用行動。'); await heat(-3); await waitBtn('繼續 →'); return; }
+  if(g.ty==='s'){ status(readAloud()+'劇情格：這一格只看，不用行動。'); await heat(-3); await waitBtn('繼續 →'); return; }
   if(g.ty==='v') await pollStart();
   const n=S.players.length, order=[...Array(n).keys()].map(i=>S.players[(S.first+i)%n]);
   S.turn={order,tokens:[],acts:{},spr:0};
@@ -1321,6 +1335,10 @@ async function runGrid(g){
   if(solo()){ const ok=goalCheck(S.players[0]); if(S.goalWas!==undefined&&ok!==S.goalWas){ toast(ok?'🎭 你的私人目標：✓ 達成了':'🎭 你的私人目標：剛剛失敗了',2400); snd(ok?'good':'bad'); } S.goalWas=ok; }
   await waitBtn(g.n===18?'看結局 →':'下一格 →');
 }
+function readAloud(){
+  if(S.mode!=='multi'||S.show) return '';
+  const r=S.players[S.first]; return `<div class="ra">📣 <b>${esc(r.name)}</b>（🚩首位）：請把班群新訊息唸給大家聽</div>`;
+}
 function afterMe(g){
   const me=S.players[0]; const mine=S.log.find(e=>e.g===g.n&&e.who===me.id&&e.a!=='dm'); if(!mine) return '';
   const after=S.log.filter(e=>e.g===g.n&&e.pos>mine.pos); if(!after.length) return '<div class="mini" style="margin-top:2px;width:100%">↳ 你是這一格最後一個。</div>';
@@ -1340,13 +1358,15 @@ function computeEnding(){
   const t=tally(1,16), st=grayStage();
   const H=humans(), nh=H.length||1;
   const hl=S.log.filter(e=>e.human&&e.g<=16&&(e.a==='say'||e.a==='vote'));
-  const T = 12 + (.2*hl.filter(e=>e.col==='grn').length + .15*hl.filter(e=>e.col==='yel').length)/nh - 2.5*st;
+  const k = S.quick ? .8 : 1;   // 快速版互動格較少，門檻等比例縮小
+  const T = k*12 + (.2*hl.filter(e=>e.col==='grn').length + .15*hl.filter(e=>e.col==='yel').length)/nh - 2.5*st;
   const W={晴:0,希:0}; S.log.forEach(e=>{ if(PUBLIC_RED(e)&&e.g<=16) W[e.tg]+=e.g>=8?1.6:1; });
   let who='none';
   if(W.晴>=T-2&&W.希>=T-2&&Math.min(W.晴,W.希)/Math.max(W.晴,W.希)>=.85) who='both';
   else if(W.晴>=T||W.希>=T) who=W.晴>=W.希?'晴':'希';
   const R=who==='晴'?W.晴:who==='希'?W.希:who==='both'?Math.max(W.晴,W.希):0;
-  const score=R+st*3; const lv=score>=22?2:score>=15.5?1:0;
+  const score=R+st*3; let lv=score>=22*k?2:score>=15.5*k?1:0;
+  if(S.mild&&lv===2) lv=1;   // 溫和結局：不出現最重的結局
   const e18=S.log.filter(e=>e.g===18);
   return {t,st,who,lv,red18:e18.filter(e=>e.col==='red'),W};
 }
@@ -1709,7 +1729,7 @@ function humanSummary(h){
 }
 function sessionSummary(){
   const E=S.E||computeEnding();
-  return {id:S.id,mode:solo()?'單人':'多人同機',ending:WHO[E.who],level:E.lv,gray:RING[grayStage()],white:S.white>=1?RING[S.white]:'只在本班',heatPeak:Math.round(S.heatPeak),
+  return {id:S.id,mode:(solo()?'單人':'桌遊模式')+(S.quick?'・快速版':'')+(S.mild?'・溫和結局':''),ending:WHO[E.who],level:E.lv,gray:RING[grayStage()],white:S.white>=1?RING[S.white]:'只在本班',heatPeak:Math.round(S.heatPeak),
     minutes:Math.round((Date.now()-S.start)/6000)/10,tableRed:tally(1,16),humans:humans().map(humanSummary)};
 }
 function summaryText(){
@@ -1787,25 +1807,29 @@ function intro(){
       $('#goShow').onclick=startShow; $('#goSpec').onclick=openSpec;
       const d=$('#dlall'); if(d) d.onclick=()=>{ download('慢一拍_訪談摘要.csv',toSumCSV(loadSessions())); setTimeout(()=>download('慢一拍_行動紀錄.csv',toCSV(loadSessions())),400); };
     };
-    const pMode=()=>{ let m='solo', cnt=4, names=[], phys=false, rsch=true;
-      const keep=()=>{ ov.querySelectorAll('.nm-in[data-i]').forEach(x=>names[+x.dataset.i]=x.value); const a=$('#phys'), b=$('#rsch'); if(a) phys=a.checked; if(b) rsch=b.checked; };
+    const pMode=()=>{ let m='solo', cnt=4, names=[], phys=false, rsch=true, quick=false, mild=false;
+      const keep=()=>{ ov.querySelectorAll('.nm-in[data-i]').forEach(x=>names[+x.dataset.i]=x.value); const a=$('#phys'), b=$('#rsch'), c=$('#quick'), d=$('#mild'); if(a) phys=a.checked; if(b) rsch=b.checked; if(c) quick=c.checked; if(d) mild=d.checked; };
       m='multi';
       const draw=()=>{ ov.innerHTML=`<div class="ov"><div class="pg"><div class="kick">怎麼玩</div><h2 style="margin-top:6px">誰要一起玩？</h2>
         <div class="modepick">
-          <button data-m="multi" class="${m==='multi'?'sel':''}"><b>🎲 桌遊模式</b><span>正式版的玩法：4–6 人圍著桌子，這台裝置放在中間當「班群」。2–3 人也能練習（會補電腦同學）。</span></button>
+          <button data-m="multi" class="${m==='multi'?'sel':''}"><b>🎲 桌遊模式</b><span>正式版的玩法：4–6 人圍著桌子，iPad 放在棋盤中間當「班群」。2–3 人也能練習（會補電腦同學）。</span></button>
           <button data-m="solo" class="${m==='solo'?'sel':''}"><b>🙂 單人體驗</b><span>一個人和 3 位電腦同學同桌，適合訪談</span></button>
         </div>
         ${m==='solo'?`<div class="card"><b>你在班上的名字</b><p class="mini" style="margin:2px 0 4px">可以亂取，班群裡的同學會這樣叫你。</p><input class="nm-in" id="nick" maxlength="6" placeholder="例如：小安" value="${esc(S.nick||'')}"></div>`
           :`<div class="card"><b>幾個人？</b><div class="cnt">${[2,3,4,5,6].map(k=>`<button data-c="${k}" class="${k===cnt?'sel':''}">${k}</button>`).join('')}</div>
             <p class="mini" style="margin:6px 0 2px">名字（照座位順時針填，會出現在桌上和班群）</p>${[...Array(cnt).keys()].map(i=>`<input class="nm-in" data-i="${i}" maxlength="6" placeholder="玩家${i+1}" value="${esc(names[i]||'')}">`).join('')}
             ${cnt<4?'<p class="mini" style="margin:4px 0 0">正式版是 4–6 人；少於 4 人會補電腦同學。</p>':''}
-            <label class="ck"><input type="checkbox" id="phys" ${phys?'checked':''}> 我們桌上有實體棋盤和代幣（平板會提醒放代幣、交首位標記）</label>
+            <label class="ck"><input type="checkbox" id="phys" ${phys?'checked':''}> 桌上有實體棋盤和代幣（iPad 只顯示班群大字，並提醒放代幣、移溫度棋子、交首位標記）</label>
+            <label class="ck"><input type="checkbox" id="quick" ${quick?'checked':''}> ⏱ 班會課快速版（約 30 分鐘：第 4、14、16 格改為只讀）</label>
+            <label class="ck"><input type="checkbox" id="mild" ${mild?'checked':''}> 🌙 溫和結局（不出現轉學等最重的結局；適合可能有相關經驗的班級）</label>
             <label class="ck"><input type="checkbox" id="rsch" ${rsch?'checked':''}> 這是訪談／測試場次（加入開始前與玩完後的自評、訪談頁）</label></div>`}
         <button class="btn pri full" id="go">下一步</button></div></div>`;
         ov.querySelectorAll('.modepick button').forEach(b=>b.onclick=()=>{ keep(); m=b.dataset.m; draw(); });
         ov.querySelectorAll('.cnt button').forEach(b=>b.onclick=()=>{ keep(); cnt=+b.dataset.c; draw(); });
         $('#go').onclick=()=>{
-          keep(); S.mode=m; S.physical=m==='multi'&&phys; S.research=m==='solo'||rsch;
+          keep(); S.mode=m; S.physical=m==='multi'&&phys; S.research=m==='solo'||rsch; S.quick=m==='multi'&&quick; S.mild=m==='multi'&&mild;
+          if(S.quick){ G.forEach(x=>{ if([4,14,16].includes(x.n)){ x.ty='s'; delete x.hot; } }); buildProg(); }
+          document.body.classList.toggle('bigtext',m==='multi'); document.body.classList.toggle('physical',S.physical); layout();
           if(m==='solo'){ S.nick=($('#nick').value||'').trim()||'小安'; setupPlayers(['你']); }
           else { const nm=[...ov.querySelectorAll('.nm-in')].map((x,i)=>(x.value||'').trim()||`玩家${i+1}`); setupPlayers(nm); }
           pStory();
@@ -1868,6 +1892,7 @@ function intro(){
     if(AUTO){
       S.mode=MULTI_AUTO?'multi':'solo';
       if(MULTI_AUTO) setupPlayers([...Array(MULTI_AUTO).keys()].map(i=>`玩家${i+1}`)); else { S.nick='小安'; setupPlayers(['你']); }
+      if(Q.has('quick')){ S.quick=true; G.forEach(x=>{ if([4,14,16].includes(x.n)){ x.ty='s'; delete x.hot; } }); buildProg(); } S.mild=Q.has('mild');
       humans().forEach(h=>h.pre={q1:pick(PRE_QS[0][2]),q2:pick(PRE_QS[1][2])}); res(); return;
     }
     p1();
@@ -1890,6 +1915,14 @@ function layout(){
   // 電腦：照實體擺法——棋盤一圈、中間是平板（班群）；代幣、溫度、擴散環放旁邊。手機：維持直式版面
   const desk=innerWidth>=880, main=$('#main'), board=$('#board'), bc=$('#bcenter'), phone=$('#phone'), table=$('#table'), seats=$('#seats');
   const parts=['#zone','#heat','#rings'].map(x=>$(x));
+  if(S.physical&&!S.show){
+    // 實體棋盤已經在桌上：iPad 畫面＝大字班群＋按鈕，不再畫棋盤
+    if(board.parentElement!==table) seats.after(board);
+    if(phone.parentElement!==main) main.insertBefore(phone,main.firstChild);
+    let at=seats; parts.forEach(el=>{ at.after(el); at=el; });
+    const ctx=$('#ctx'), sheet=$('#sheet'); if(ctx.nextElementSibling!==sheet) sheet.before(ctx);
+    document.body.classList.remove('deskboard'); scrollChat(); return;
+  }
   if(desk){
     if(board.parentElement!==main) main.insertBefore(board,main.firstChild);
     if(phone.parentElement!==bc) bc.appendChild(phone);
