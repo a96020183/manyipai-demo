@@ -424,6 +424,8 @@ html{zoom:var(--z,1)}
   .tip{margin-top:4px}
   @keyframes sheetin{from{transform:translateY(30px);opacity:.6}to{transform:none;opacity:1}}
 }
+#ovl:not(:empty){position:fixed;inset:0;z-index:49;background:var(--bg)}
+.zc{height:54px;overflow:hidden}.seat .st{height:16px;line-height:16px}
 .pickhead{display:none}
 .vgrid{display:grid;grid-template-columns:1fr 1fr;gap:6px}.vgrid .vbtn{margin:0}
 .gridcard .tb{display:inline-block;margin-top:8px;color:#fff;font-size:12.5px;padding:3px 10px;border-radius:12px;font-weight:700}
@@ -1842,11 +1844,13 @@ function layout(){
     if(board.parentElement!==main) main.insertBefore(board,main.firstChild);
     if(phone.parentElement!==bc) bc.appendChild(phone);
     let at=seats; parts.forEach(el=>{ at.after(el); at=el; });
+    const ctx=$('#ctx'), sheet=$('#sheet'); if(ctx.nextElementSibling!==sheet) sheet.before(ctx);
     document.body.classList.add('deskboard');
   } else {
     if(board.parentElement!==table) seats.after(board);
     if(phone.parentElement!==main) main.insertBefore(phone,main.firstChild);
     parts.forEach(el=>bc.appendChild(el));
+    const ctx=$('#ctx'), sheet=$('#sheet'); if(sheet.nextElementSibling!==ctx) sheet.after(ctx);
     document.body.classList.remove('deskboard');
   }
   scrollChat();
