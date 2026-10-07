@@ -1,0 +1,381 @@
+<!doctype html>
+<html lang="zh-Hant">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>慢一拍：班群風暴｜規格說明</title>
+<style>
+:root{--bg:#F5F1EA;--ink:#1F1B16;--muted:#7B746A;--line:#E4DDD1;--card:#fff;--red:#E5484D;--yel:#E9A923;--grn:#2E9E68;--accent:#1F3B5C}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:"Noto Sans TC","PingFang TC","Microsoft JhengHei",system-ui,sans-serif;font-size:16px;line-height:1.75}
+a{color:var(--accent)}
+header{background:radial-gradient(120% 120% at 80% 0%,#2C3F57 0%,#17202B 70%);color:#F3EEE6;padding:34px 20px 30px}
+header .in{max-width:1100px;margin:0 auto}
+header .k{font-size:12.5px;letter-spacing:.14em;color:#9FB0C4;font-weight:700}
+header h1{font-size:34px;margin:8px 0 4px;letter-spacing:.03em}
+header p{margin:6px 0 16px;color:#C9D4E0}
+.btns{display:flex;gap:10px;flex-wrap:wrap}
+.btns a{display:inline-block;text-decoration:none;font-weight:800;border-radius:12px;padding:10px 16px;background:#F3EEE6;color:#17202B}
+.btns a.o{background:transparent;color:#F3EEE6;border:1.5px solid rgba(255,255,255,.4)}
+.wrap{max-width:1100px;margin:0 auto;display:grid;grid-template-columns:230px minmax(0,1fr);gap:28px;padding:24px 20px 60px}
+nav{position:sticky;top:16px;align-self:start;font-size:14px;max-height:calc(100vh - 32px);overflow-y:auto}
+nav b{display:block;font-size:12px;letter-spacing:.12em;color:var(--muted);margin-bottom:6px}
+nav a{display:block;text-decoration:none;color:var(--ink);padding:4px 10px;border-radius:8px;border-left:3px solid transparent}
+nav a:hover{background:#EDE6DA;border-left-color:var(--accent)}
+main section{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:22px 24px;margin-bottom:18px;scroll-margin-top:16px}
+h2{font-size:22px;margin:0 0 12px;display:flex;align-items:center;gap:10px}
+h2 .n{width:30px;height:30px;border-radius:50%;background:var(--accent);color:#fff;font-size:14px;display:grid;place-items:center;flex:none}
+h3{font-size:17px;margin:20px 0 6px}
+p{margin:8px 0}
+.lead{font-size:18px;font-weight:700}
+.mut{color:var(--muted);font-size:14px}
+table{width:100%;border-collapse:collapse;font-size:14.5px;margin:10px 0}
+th{text-align:left;font-size:12.5px;color:var(--muted);border-bottom:1.5px solid var(--line);padding:7px 8px;white-space:nowrap}
+td{border-bottom:1px solid #F0EBE2;padding:8px;vertical-align:top}
+.tw{overflow-x:auto}
+.kv{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:10px;margin:10px 0}
+.kv div{background:#F8F4EC;border-radius:12px;padding:12px 14px}
+.kv b{display:block;font-size:12.5px;color:var(--muted);letter-spacing:.05em}
+.kv span{font-size:16px;font-weight:700}
+.tag{display:inline-block;border-radius:20px;padding:1px 9px;font-size:12.5px;font-weight:700;margin-right:4px}
+.r{background:#FDE8E8;color:#B3262B}.y{background:#FDF3DC;color:#8A6210}.g{background:#E2F4EA;color:#1D6E47}
+.dot{display:inline-block;width:12px;height:12px;border-radius:50%;vertical-align:-1px;margin-right:4px}
+.note{background:#FFF8E6;border:1px dashed #D9BE7A;border-radius:12px;padding:10px 14px;font-size:14.5px;margin:10px 0}
+ol,ul{margin:6px 0;padding-left:22px}
+li{margin:3px 0}
+/* board diagram */
+.board{display:grid;grid-template-columns:repeat(7,minmax(0,1fr));grid-template-rows:auto 1fr 1fr auto;gap:6px;padding:12px;border-radius:18px;
+  background:radial-gradient(120% 90% at 50% 0%,#463D33 0%,#2E2721 70%);box-shadow:0 12px 26px rgba(40,30,20,.25);margin:12px 0;aspect-ratio:1.42/1;max-width:760px}
+.bt{--tc:#8FB3D9;background:#FBF6EC;border-top:5px solid var(--tc);border-radius:7px;font-weight:800;font-size:13px;line-height:1.2;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:3px;min-width:0}
+.bt small{font-size:10.5px;font-weight:600;color:var(--muted)}
+.ts{--tc:#C9BCA6}.th{--tc:#E5484D}.td{--tc:#9B7BC8}.tv{--tc:#4FA3A3}.tr{--tc:#E87A8C}.tf{--tc:#5DB287}
+.ctr{grid-row:2/4;grid-column:2/7;display:grid;grid-template-rows:1fr auto;gap:6px;min-height:0}
+.ipad{background:#121212;border-radius:16px;padding:8px;display:flex;align-items:center;justify-content:center;color:#C9D4E0;font-size:14px;text-align:center;box-shadow:inset 0 0 0 2px #2c2c2c}
+.ipad span{background:#C7D5E4;color:#1F3B5C;border-radius:9px;width:100%;height:100%;display:grid;place-items:center;font-weight:800;padding:6px}
+.zones{display:grid;grid-template-columns:1fr 1fr 1fr;gap:6px}
+.zones div{background:#F6F1E7;border-radius:8px;font-size:11.5px;text-align:center;padding:5px 2px;font-weight:700}
+.legend{display:flex;flex-wrap:wrap;gap:6px 14px;font-size:13.5px}
+.legend span::before{content:"";display:inline-block;width:14px;height:5px;border-radius:3px;margin-right:5px;vertical-align:3px;background:var(--c)}
+.track{display:grid;grid-template-columns:repeat(11,1fr);gap:3px;max-width:560px;margin:8px 0}
+.track div{text-align:center;font-size:12px;border-radius:6px;padding:4px 0;font-weight:700}
+@media (max-width:860px){
+  .wrap{grid-template-columns:1fr;padding:16px 12px 50px}
+  nav{position:static;max-height:none;background:var(--card);border:1px solid var(--line);border-radius:14px;padding:12px}
+  nav a{display:inline-block;margin:2px 2px;border:1px solid var(--line);border-radius:20px;padding:2px 10px}
+  main section{padding:16px 14px}
+  header h1{font-size:27px}
+  .bt{font-size:11px}.bt small{display:none}
+  .board{aspect-ratio:auto;grid-template-rows:auto 150px 150px auto;padding:8px;gap:4px}
+}
+@media print{nav,header .btns{display:none}.wrap{display:block}main section{break-inside:avoid;border:0;padding:0 0 10px}}
+</style>
+</head>
+<body>
+<header><div class="in">
+  <div class="k">第 11 屆 DESIGN FOR TAIWAN ・ 組員版</div>
+  <h1>慢一拍：班群風暴｜規格說明</h1>
+  <p>v1.2・2026-10-07・桌遊為主體，網頁是桌遊中央那台 iPad 的內容。數值與網頁試玩版一致。</p>
+  <div class="btns"><a id="lnkPlay" href="index.html">▶ 開始試玩</a><a class="o" id="lnkShow" href="index.html?show">看展示版（自動播放）</a></div>
+</div></header>
+
+<div class="wrap">
+<nav><b>目錄</b>
+  <a href="#s1">1 核心</a><a href="#s2">2 規格</a><a href="#s3">3 棋盤與 iPad</a><a href="#s4">4 內容物</a><a href="#s5">5 開局</a>
+  <a href="#s6">6 每一格怎麼玩</a><a href="#s7">7 四種行動</a><a href="#s8">8 桌面系統</a><a href="#s9">9 班群溫度</a><a href="#s10">10 特殊格</a>
+  <a href="#s11">11 結局</a><a href="#s12">12 結尾流程</a><a href="#s13">13 身分卡</a><a href="#s14">14 18 格一覽</a>
+  <a href="#s15">15 量測與紀錄</a><a href="#s16">16 網頁怎麼用</a><a href="#s17">17 桌遊與網頁對照</a><a href="#s18">18 P0 測試</a><a href="#s19">19 版本紀錄</a>
+</nav>
+<main>
+
+<section id="s1"><h2><span class="n">1</span>核心</h2>
+  <p class="lead">截圖是真的，傷害照樣發生。</p>
+  <p>玩家親身經歷：資訊還不完整時，<b>我的公開表態會變成下一個人的資訊</b>；完整真相出現後，<b>我做出去的事已經收不回來</b>。</p>
+  <p class="mut">不教「怎麼查證」，而是讓玩家在同儕面前練習「先慢一拍」，並看見自己的判斷是怎麼形成的。</p>
+</section>
+
+<section id="s2"><h2><span class="n">2</span>規格</h2>
+  <div class="kv">
+    <div><b>人數</b><span>4–6 人（班級版建議 4–5 人一桌）</span></div>
+    <div><b>時間</b><span>遊戲約 35–42 分鐘＋討論 8–10 分鐘</span></div>
+    <div><b>對象</b><span>國中、高中學生</span></div>
+    <div><b>裝置</b><span>每桌 1 台 iPad，放在棋盤中央</span></div>
+  </div>
+  <p class="mut">iPad 可用其他平板、Chromebook 或筆電代替；手機只是備案（太小，全桌不好一起看）。iPad 用瀏覽器開啟試玩網頁，選「🎲 桌遊模式」。</p>
+</section>
+
+<section id="s3"><h2><span class="n">3</span>棋盤與 iPad</h2>
+  <p>棋盤是一張深色硬紙板（建議 A2 尺寸，可對折）。18 格環繞一圈，<b>中央凹槽橫放一台 iPad</b>，iPad 畫面就是「二年三班 班群」，全桌一起看。</p>
+  <div class="board">
+    <div class="bt">1<small>截圖</small></div><div class="bt th">2 🔥<small>走廊</small></div><div class="bt ts">3<small>第一波</small></div><div class="bt">4<small>以前</small></div><div class="bt th">5 🔥<small>限動</small></div><div class="bt ts">6<small>做與說</small></div><div class="bt">7<small>又有人</small></div>
+    <div class="bt tf" style="grid-row:2;grid-column:1">18<small>之後</small></div>
+    <div class="ctr"><div class="ipad"><span>iPad（橫放）<br>畫面＝班群</span></div>
+      <div class="zones"><div style="color:#B3262B">紅・指向子晴</div><div>黃 保留・綠 介入</div><div style="color:#B3262B">紅・指向妍希</div></div></div>
+    <div class="bt" style="grid-row:2;grid-column:7">8<small>沒回答</small></div>
+    <div class="bt tr" style="grid-row:3;grid-column:1">17 ★<small>真相</small></div>
+    <div class="bt td" style="grid-row:3;grid-column:7">9 💬<small>傳圖者</small></div>
+    <div class="bt" style="grid-row:4;grid-column:1">16<small>說明</small></div><div class="bt ts" style="grid-row:4;grid-column:2">15<small>分工</small></div><div class="bt" style="grid-row:4;grid-column:3">14<small>那句話</small></div><div class="bt ts" style="grid-row:4;grid-column:4">13<small>被忽略</small></div><div class="bt tv" style="grid-row:4;grid-column:5">12 📊<small>投票</small></div><div class="bt" style="grid-row:4;grid-column:6">11<small>同一限動</small></div><div class="bt th" style="grid-row:4;grid-column:7">10 🔥<small>另一版本</small></div>
+  </div>
+  <div class="legend">
+    <span style="--c:#8FB3D9">互動格</span><span style="--c:#C9BCA6">劇情格（只看）</span><span style="--c:#E5484D">熱格（10 秒）</span>
+    <span style="--c:#9B7BC8">私訊格</span><span style="--c:#4FA3A3">投票格</span><span style="--c:#E87A8C">真相</span><span style="--c:#5DB287">最後一格</span>
+  </div>
+  <h3>棋盤上還印著</h3>
+  <ul>
+    <li><b>立場區</b>（iPad 下緣）：三塊——紅・指向子晴｜黃保留・綠介入｜紅・指向妍希。玩家「說」完把代幣放這裡，每格結束收回。</li>
+    <li><b>擴散環</b>（棋盤外圈或一側）：本班 → 同年級 → 全校 → 校外，放灰色與白色兩顆指標。</li>
+    <li><b>班群溫度軌</b>（棋盤一側）：0–10 格，放一顆溫度棋子（見第 9 節）。</li>
+    <li>格子上印格號與圖示；劇情內容不印在棋盤上，由 iPad 呈現（避免先看到劇情）。</li>
+  </ul>
+</section>
+
+<section id="s4"><h2><span class="n">4</span>內容物</h2>
+  <div class="tw"><table>
+    <tr><th>項目</th><th>數量</th><th>用途</th></tr>
+    <tr><td>棋盤</td><td>1</td><td>18 格環形軌道、中央 iPad 凹槽、立場區、擴散環、溫度軌</td></tr>
+    <tr><td>iPad（或平板／Chromebook）</td><td>1</td><td>班群畫面、私人資訊、紀錄、結局與回顧（玩家自備或學校載具）</td></tr>
+    <tr><td>事件進度棋子</td><td>1</td><td>標示目前格數</td></tr>
+    <tr><td>🚩 首位玩家標記</td><td>1</td><td>本格第一個行動的人；每個互動格結束順時針交給下一位</td></tr>
+    <tr><td>立場代幣（紅、黃、綠）</td><td>每人各 1，共 6 人份</td><td>代幣背面印座位編號，看得出誰放的</td></tr>
+    <tr><td>擴散環指標（灰、白）</td><td>各 1</td><td>灰＝被裁過的截圖傳到哪；白＝完整對話傳到哪</td></tr>
+    <tr><td>溫度棋子</td><td>1</td><td>在溫度軌上移動</td></tr>
+    <tr><td>身分卡</td><td>6</td><td>每人一張，祕密（第 13 節）</td></tr>
+    <tr><td>行動提示板</td><td>6</td><td>說・查・傳・等的提醒</td></tr>
+    <tr><td>帶領卡</td><td>1</td><td>遊戲後的 3 個討論問題（第 12 節）</td></tr>
+    <tr><td>規則卡、QR 卡</td><td>各 1</td><td>QR 直接開啟網頁的桌遊模式</td></tr>
+  </table></div>
+  <p class="mut">「留言卡」不需要實體卡：玩家說完話後在 iPad 上點一句。紙本測試時才印成紙條（第 18 節）。</p>
+</section>
+
+<section id="s5"><h2><span class="n">5</span>開局</h2>
+  <ol>
+    <li>iPad 開啟網頁 → 開始 → <b>🎲 桌遊模式</b>，輸入人數與名字（照座位順時針），勾選「桌上有實體棋盤和代幣」。</li>
+    <li>iPad 依序請每個人輪流拿起來（其他人轉開）：抽身分卡、（訪談場次）回答兩題自評。</li>
+    <li>每人拿紅黃綠代幣各一；棋子放第 1 格；溫度棋子放第 2 格；灰色指標放「本班」。iPad 會告訴你 🚩 先給誰。</li>
+    <li>iPad 放回中央，從第 1 格開始。</li>
+  </ol>
+</section>
+
+<section id="s6"><h2><span class="n">6</span>每一格怎麼玩</h2>
+  <p>iPad 顯示這一格的新訊息，全桌一起讀。接著：</p>
+  <div class="tw"><table>
+    <tr><th>格子類型</th><th>格數</th><th>做什麼</th></tr>
+    <tr><td>互動格</td><td>1、4、7、8、11、14、16、18</td><td>從 🚩 開始，每人依序選「說／查／傳／等」其中一項</td></tr>
+    <tr><td>🔥 熱格</td><td>2、5、10</td><td>同互動格，但每人只有 10 秒；逾時算「等」；選「查」讀私訊時暫停計時</td></tr>
+    <tr><td>💬 私訊格</td><td>9</td><td>互動格＋iPad 先私訊一位玩家（第 10 節）</td></tr>
+    <tr><td>📊 投票格</td><td>12</td><td>每人依序投一票（第 10 節）</td></tr>
+    <tr><td>劇情格</td><td>3、6、13、15</td><td>只讀，不行動</td></tr>
+    <tr><td>★ 真相</td><td>17</td><td>完整對話公開（第 10 節）</td></tr>
+  </table></div>
+  <p>互動格全員做完 → 收回代幣、棋子前進一格、🚩 順時針交給下一位。首位輪替讓每個人都會當到「第一個表態」與「前面已經有人表態」兩種位置——這是量測的關鍵。</p>
+  <p class="mut">「說」以一兩句話為原則（約 15 秒）。</p>
+</section>
+
+<section id="s7"><h2><span class="n">7</span>四種行動</h2>
+  <div class="tw"><table>
+    <tr><th>行動</th><th>怎麼做</th><th>桌上／iPad 留下什麼</th></tr>
+    <tr><td>💬 說</td><td>開口講一兩句 → 把一顆代幣放到立場區 → 在 iPad 點一張最接近的留言卡</td><td>代幣（本格可見）＋留言（永久留在班群，結尾重播）</td></tr>
+    <tr><td>🔍 查</td><td>iPad 轉向自己（或按住才顯示），看一則私人補充資訊；不一定對</td><td>無。要讓別人知道，之後得用「說」公開</td></tr>
+    <tr><td>📤 傳</td><td>選一則往外傳：原始截圖、某位同學的說法、或某人的留言（第 18 格：完整對話或舊截圖）</td><td>擴散環指標移動（第 8 節）</td></tr>
+    <tr><td>👀 等</td><td>這一格不動</td><td>無（班群裡顯示「已讀」）</td></tr>
+  </table></div>
+</section>
+
+<section id="s8"><h2><span class="n">8</span>桌面系統</h2>
+  <h3>立場代幣</h3>
+  <p><span class="tag r">紅</span>已形成明確判斷（放在「子晴」或「妍希」那一側）　<span class="tag y">黃</span>資訊不足，暫不判斷　<span class="tag g">綠</span>介入：先阻止攻擊或擴散。只有「說」與投票會放代幣。</p>
+  <h3>留言卡（在 iPad 上點）</h3>
+  <div class="tw"><table>
+    <tr><th>顏色</th><th>第 1–6 格</th><th>第 7–16 格</th></tr>
+    <tr><td><span class="tag r">紅</span></td><td>子晴這樣講太過分了→子晴｜子晴根本是在霸凌人→子晴｜看來妍希真的沒做事→妍希</td><td>子晴講話本來就很衝→子晴｜子晴根本是在霸凌人→子晴｜妍希就是故意不講清楚→妍希｜妍希是在帶風向吧→妍希</td></tr>
+    <tr><td><span class="tag y">黃</span></td><td>先等完整的對話｜這張圖沒有前後文｜還不知道她在說誰</td><td>先等完整的對話｜現在知道的其實很少｜兩邊都還沒講話</td></tr>
+    <tr><td><span class="tag g">綠</span></td><td colspan="2">先不要罵人｜不要再傳了｜直接問本人比較快</td></tr>
+    <tr><td>共用</td><td colspan="2">「我剛問到：＿＿」——把自己「查」到的私人資訊公開（算黃色）</td></tr>
+  </table></div>
+  <p class="mut">第 18 格的留言卡：紅「反正子晴平常就很討厭」「反正妍希也不是完全沒事」；黃「原來我之前想錯了」「我還在消化」；綠「對不起，我之前說太快了」「大家去看完整對話，舊圖不要再傳了」。</p>
+  <h3>班群回聲</h3>
+  <p>每個互動格結束，iPad 依本格<b>公開</b>的代幣與留言追加至多一則同學反應。以多數為準：保留＋介入＋公開線索多於紅色時，給冷靜的回應。回聲不提供新證據，也不引用任何人私下查到的資訊。</p>
+  <h3>擴散環</h3>
+  <ul>
+    <li>灰色指標＝被裁過的截圖。第 1–16 格每次「傳」累積 1 點：<b>2 點→同年級、4 點→全校、7 點→校外</b>。只能往外，永遠不能退回。</li>
+    <li>第 17 格完整對話公開，白色指標放「本班」。第 18 格每有人「傳完整對話」，白色外推一環（最遠到灰色所在的環）；有人「傳舊截圖」，灰色再加 1 點。</li>
+    <li>白色到達某一環，只代表那裡「有人收到補充」。灰色到過、白色沒到的地方，結局一律寫成「還停在昨天的版本」。</li>
+  </ul>
+</section>
+
+<section id="s9"><h2><span class="n">9</span>班群溫度</h2>
+  <p><b>作用：</b>讓整桌在當下就看見「現在班群有多熱」，不用等到結局；溫度越高，班群回聲越激動。（網頁的電腦同學在溫度高時也比較容易跟著放紅色。）</p>
+  <h3>正式版：iPad 自動算，棋盤上看得到</h3>
+  <p>所有行動本來就會在 iPad 上點，所以溫度由 iPad 自動計算，畫面上有溫度條；每格結束 iPad 提示「🌡️ 溫度棋子移到第 X 格」，由當格 🚩 玩家移動棋盤邊的溫度棋子。</p>
+  <div class="track">
+    <div style="background:#DDE8F3">0</div><div style="background:#DDE8F3">1</div><div style="background:#DDE8F3">2</div><div style="background:#FBEBC6">3</div><div style="background:#FBEBC6">4</div><div style="background:#FBEBC6">5</div><div style="background:#F9D3D4">6</div><div style="background:#F9D3D4">7</div><div style="background:#F9D3D4">8</div><div style="background:#F9D3D4">9</div><div style="background:#F9D3D4">10</div>
+  </div>
+  <p class="mut">0–2 🧊 冷靜｜3–5 😬 升溫｜6–10 🔥 沸騰（第一次到沸騰時 iPad 會提示「班群沸騰了」）</p>
+  <div class="tw"><table>
+    <tr><th>事件</th><th>iPad 數值（0–100）</th><th>紙本整數規則（0–10）</th></tr>
+    <tr><td>開局</td><td>20</td><td>2</td></tr>
+    <tr><td>紅色（說或投票）</td><td>+5；跟前面多數同方向再 +2</td><td>+1</td></tr>
+    <tr><td>傳（第 1–16 格）</td><td>+5</td><td>+1</td></tr>
+    <tr><td>私訊被截圖貼出</td><td>+12</td><td>+2</td></tr>
+    <tr><td>第 18 格傳舊截圖</td><td>+6</td><td>+1</td></tr>
+    <tr><td>綠色</td><td>−8</td><td>−1</td></tr>
+    <tr><td>公開查到的線索</td><td>−6</td><td>−1</td></tr>
+    <tr><td>黃色</td><td>−3</td><td>0</td></tr>
+    <tr><td>第 18 格傳完整對話</td><td>−6</td><td>−1</td></tr>
+    <tr><td>每個互動格結束</td><td>−5（第 13 格起 −8）</td><td>−1</td></tr>
+    <tr><td>劇情格</td><td>−3</td><td>0</td></tr>
+    <tr><td>第 17 格真相</td><td>−25</td><td>−3</td></tr>
+  </table></div>
+</section>
+
+<section id="s10"><h2><span class="n">10</span>特殊格</h2>
+  <h3>第 7 格｜又有人這樣說</h3>
+  <p>若第 1–6 格有人放過紅色，班群出現「別的群組流傳的說法」——其實就是桌上某人說過的話（優先選被轉傳出去的那句）。這一格「查」會發現：它不是新的目擊者，只是同一句話繞了一圈。</p>
+  <h3>第 9 格｜💬 私訊格 → 第 11 格外流</h3>
+  <p>iPad 只私訊一位玩家（公開紅色最少的人；其他人轉開）。佳恩：「你覺得到底是誰的問題？我不會說出去啦。」回覆四選一：</p>
+  <p><span class="tag r">我覺得是子晴的問題</span><span class="tag r">我覺得妍希怪怪的</span><span class="tag y">我還不知道欸</span><span class="tag g">你先別到處問啦，等她們自己講</span></p>
+  <p>若回紅色：第 11 格「某位同學」把這段私訊截圖（裁掉前後文）貼進班群，算一次公開紅色、溫度大幅上升。玩家親身經歷故事本身的起點——一段私人對話，被裁成一張截圖。</p>
+  <h3>第 12 格｜📊 投票格</h3>
+  <p>小岑先回應，接著阿哲發起「你覺得這件事，誰比較有問題？」。班上已有 8 人先投（依前面的紅色比例），同桌從 🚩 開始依序投：子晴／妍希／還不知道／不要投這種東西，票數即時公開；投票也放代幣。投紅色算一次公開紅色。</p>
+  <h3>第 17 格｜★ 完整對話</h3>
+  <p>iPad 先只顯示被截下來的那一句，再展開前後文：子晴罵的是「另一組用了妍希的頁面、拿去上台的人」。被推翻的是「子晴霸凌妍希」與「妍希策畫攻擊子晴」兩套說法——但子晴那句話本身也不恰當。<b>前面每一件「事實」都是真的，錯的是大家怎麼把它們接成故事。</b></p>
+  <h3>第 18 格｜之後</h3>
+  <p>照常進行一次「說／查／傳／等」，不加修正規則。查＝看截圖和完整對話各傳到哪。</p>
+</section>
+
+<section id="s11"><h2><span class="n">11</span>結局</h2>
+  <p>四個方向：<b>子晴被公審</b>、<b>妍希被公審</b>、<b>兩人都被攻擊</b>、<b>沒有形成公審</b>；前兩者再分「較輕／中／高」三種程度。沒有分數、沒有輸贏。</p>
+  <h3>怎麼判定（iPad 自動）</h3>
+  <ol>
+    <li>統計第 1–16 格的公開紅色（說、投票、被截圖的私訊），<b>第 8 格以後的紅色 ×1.6</b>——大家最後在攻擊誰，比最早攻擊誰更決定結局。</li>
+    <li>門檻 T＝12＋（0.2×綠色次數＋0.15×黃色次數）÷ 真人人數 − 2.5×擴散環級數（本班 0、同年級 1、全校 2、校外 3）。<span class="mut">你們的綠與黃讓公審更難成形，擴散讓它更容易。</span></li>
+    <li>某一方 ≥ T → 該方被公審；兩方都 ≥ T−2 且接近（比例 ≥ 0.85）→ 兩人都被攻擊；否則 → 沒有形成公審。</li>
+    <li>程度＝主要對象的加權紅色＋3×擴散環級數：≥22 高、≥15.5 中、其餘較輕。</li>
+  </ol>
+  <p>結局頁附「為什麼是這個結局」：紅色數量、誰放最多、截圖傳到哪、真人讓班群降溫幾度；若多數人從沒放過紅色卻形成公審，會寫「傷害，不需要多數人」。結局尾聲另依擴散環、第 18 格行動、私訊截圖補上一句。</p>
+</section>
+
+<section id="s12"><h2><span class="n">12</span>結尾流程（約 12 分鐘）</h2>
+  <ol>
+    <li><b>結局</b>（iPad）</li>
+    <li><b>當事人視角回放</b>：iPad 以被公審者的手機，重播整晚班群；統計「這一桌留下幾則指向她的紅色、各是誰」。</li>
+    <li><b>事件回顧</b>：iPad 挑 3 個關鍵時刻（第一顆紅色、有人在多數壓力下的選擇、懷疑轉向、私訊外流），請當事人用一句話說說當時為什麼這樣選。</li>
+    <li><b>身分卡揭露</b>：每人翻開身分卡，回答「你的私人目標達成了嗎？為了它，你做了什麼？」</li>
+    <li><b>帶領卡三題</b>（老師或任一玩家唸，每題約 3 分鐘）：
+      <ul><li>你們桌最早把誰當成「壞人」？（追問：是不是只是換了一個可以被責怪的人？）</li>
+      <li>哪一則資訊最容易讓你覺得「這次應該是真的」？（追問：問題可能不是假資訊，而是把真實片段補成超過證據的故事。）</li>
+      <li>如果你是子晴或妍希，看到剛才的班群，哪一件事最讓你在意？（追問：道歉、澄清、刪除之後，事情能完全回到最開始嗎？）</li></ul></li>
+  </ol>
+  <p class="mut">任何人都可以隨時退出；建議與輔導室一起進行。網頁封面與結尾附求助資源：安心專線 1925、教育部反霸凌專線 0800-200-885。</p>
+</section>
+
+<section id="s13"><h2><span class="n">13</span>身分卡（6 張）</h2>
+  <p class="mut">只提供關係與動機，不提供事件證據；目標不計分，結束時揭曉是否達成。</p>
+  <div class="tw"><table>
+    <tr><th>身分</th><th>你知道的事</th><th>私人目標</th><th>拉力</th></tr>
+    <tr><td>子晴的國小同學</td><td>她講話一向很直，但你不覺得她會故意欺負人</td><td>在有人指責子晴的那一格，至少一次放綠色</td><td>想護朋友，又怕被說護航</td></tr>
+    <tr><td>妍希的座位鄰居</td><td>常看到妍希下課還在改報告圖表</td><td>第 8 格以前，至少一次放指向子晴的紅色（替妍希抱不平）</td><td>先入為主</td></tr>
+    <tr><td>班上的消息靈通人士</td><td>大家有事都先問你</td><td>至少兩次成為該格第一個「說」或「傳」的人</td><td>搶快</td></tr>
+    <tr><td>剛轉來的同學</td><td>還在找一起吃午餐的人</td><td>第 9 格以前，至少兩次和前面的紅色放同方向</td><td>從眾</td></tr>
+    <tr><td>上學期被子晴點名的人</td><td>那次你確實沒交（就是第 4 格的事）</td><td>整場不放指向子晴的紅色</td><td>舊帳偏見</td></tr>
+    <tr><td>班級幹部</td><td>導師說班上的事不要鬧到外面</td><td>第 17 格以前，擴散環一直停在「本班」</td><td>介入，或壓下來</td></tr>
+  </table></div>
+</section>
+
+<section id="s14"><h2><span class="n">14</span>S1〈被裁掉的那一句〉18 格一覽</h2>
+  <div class="tw"><table>
+    <tr><th>格</th><th>類型</th><th>事件</th></tr>
+    <tr><td>1</td><td>互動</td><td>小岑貼出截圖：「她根本沒做……真的很噁」，問「是在說妍希嗎？」</td></tr>
+    <tr><td>2</td><td>🔥 熱格</td><td>阿哲看到子晴和妍希在走廊氣氛很僵</td></tr>
+    <tr><td>3</td><td>劇情</td><td>有人剛上線問發生什麼，班群依前兩格的表態回應</td></tr>
+    <tr><td>4</td><td>互動</td><td>佳恩：子晴上學期曾在群組點名沒交作業的人</td></tr>
+    <tr><td>5</td><td>🔥 熱格</td><td>妍希的限動：「幫最多的人不一定會被看見。算了。」</td></tr>
+    <tr><td>6</td><td>劇情</td><td>圖表多是妍希做的，上台比較久的是子晴</td></tr>
+    <tr><td>7</td><td>互動</td><td>「又有人這樣說」——其實是桌上的說法繞回來</td></tr>
+    <tr><td>8</td><td>互動</td><td>妍希看過截圖，只回「我現在不想講這件事」</td></tr>
+    <tr><td>9</td><td>💬 私訊</td><td>最早傳圖的小岑是妍希的好友；佳恩私訊一位玩家</td></tr>
+    <tr><td>10</td><td>🔥 熱格</td><td>阿哲推論：妍希是不是讓朋友先丟圖？</td></tr>
+    <tr><td>11</td><td>互動</td><td>（若私訊回紅色：私訊截圖被貼出）同一則限動被重新解讀</td></tr>
+    <tr><td>12</td><td>📊 投票</td><td>小岑出面回應；阿哲發起「誰比較有問題」投票</td></tr>
+    <tr><td>13</td><td>劇情</td><td>報告群組 17:50：「簡報那件事，到底要不要先跟老師講？」</td></tr>
+    <tr><td>14</td><td>互動</td><td>子晴曾問妍希：「妳為什麼就是不跟老師講？」</td></tr>
+    <tr><td>15</td><td>劇情</td><td>分工紀錄：老師請子晴補充，所以上台比較久</td></tr>
+    <tr><td>16</td><td>互動</td><td>小岑：圖是我貼的，不是妍希叫我貼的</td></tr>
+    <tr><td>17</td><td>★ 真相</td><td>完整對話到齊</td></tr>
+    <tr><td>18</td><td>互動</td><td>「現在，你想做什麼？」</td></tr>
+  </table></div>
+</section>
+
+<section id="s15"><h2><span class="n">15</span>量測與紀錄</h2>
+  <div class="tw"><table>
+    <tr><th>指標</th><th>定義</th></tr>
+    <tr><td>跟隨率</td><td>前面已有 ≥2 顆同方向紅色時，自己也放同方向紅色的比例；對照「前面沒有紅色時」放紅色的比例（同一人比較，靠首位輪替）</td></tr>
+    <tr><td>前面有紅色時跟著放</td><td>前面已有 ≥1 顆紅色時跟同方向的次數（多人時主要用這個）</td></tr>
+    <tr><td>首次定罪格</td><td>第一次放紅色在第幾格；以及之前有沒有先「查」</td></tr>
+    <tr><td>影響鏈</td><td>自己放紅色後，同一格後面有幾人跟上同方向</td></tr>
+    <tr><td>降溫</td><td>自己的綠色與公開線索讓班群降了幾度</td></tr>
+    <tr><td>公開 vs 私下</td><td>私訊裡說了什麼，對照公開的紅色</td></tr>
+    <tr><td>自評落差</td><td>開始前與玩完後的兩題自評，對照實際行為</td></tr>
+    <tr><td>決定時間</td><td>熱格與一般格的平均決定秒數</td></tr>
+  </table></div>
+  <p>網頁可下載兩份 CSV（只存在該裝置的瀏覽器，不會上傳）：<b>訪談摘要</b>（一位受訪者一列，含訪談逐字回答）、<b>行動紀錄</b>（一個行動一列，含順位、前方紅色數、決定毫秒）。</p>
+</section>
+
+<section id="s16"><h2><span class="n">16</span>網頁怎麼用</h2>
+  <div class="tw"><table>
+    <tr><th>模式</th><th>用途</th></tr>
+    <tr><td>🎲 桌遊模式</td><td>正式版玩法：iPad 放桌子中央。4–6 人；2–3 人可練習（補電腦同學）。可勾選「實體棋盤與代幣」（iPad 會提醒放代幣、移溫度棋子、交 🚩）與「訪談場次」（加自評與訪談頁）</td></tr>
+    <tr><td>🙂 單人體驗</td><td>一人＋3 位電腦同學，約 10 分鐘，適合個別訪談</td></tr>
+    <tr><td>▶ 展示版</td><td>示範玩家小安自動玩完整局，右側有解說欄；可暫停、快轉。適合簡報、錄影、攤位（網址加 ?show）</td></tr>
+  </table></div>
+  <h3>給訪談員</h3>
+  <ol>
+    <li>把裝置交給受訪者，不解釋規則、不提示答案；觀察他在哪一格停下、皺眉、笑、說話。</li>
+    <li>結束後依「給訪談員」頁的題目追問（題目依這局數據自動帶入），直接在頁面逐字記錄。</li>
+    <li>同一台裝置可連續訪談多人，最後在封面或結尾下載 CSV。不要清除瀏覽器資料。</li>
+  </ol>
+  <div class="note"><b>電腦同學怎麼運作（評審可能會問）：</b>電腦同學有各自的身分與傾向，會受劇情證據、桌上代幣（包括真人的）與班群溫度影響。為了讓每位受訪者都經歷「前面已有兩顆同方向紅色」，前 12 格中，當真人排第 3 位以後、且這種情境還不到 3 次時，排在他前面的電腦同學有 85% 機率放紅色。所以跟隨率量的是<b>壓力出現時人的反應</b>，不是壓力出現的頻率。多人桌遊模式中，真人之間的影響沒有任何安排。</div>
+</section>
+
+<section id="s17"><h2><span class="n">17</span>桌遊與網頁對照</h2>
+  <div class="tw"><table>
+    <tr><th>類別</th><th>內容</th><th>桌遊</th><th>網頁</th></tr>
+    <tr><td>核心（New 原設計）</td><td>18 格 S1、說查傳等（傳可選內容）、三色代幣、首位輪替、班群回聲、第 17／18 格、四種結局、事件回顧、帶領卡三題</td><td>✓</td><td>✓</td></tr>
+    <tr><td>v1.1–1.2 新增</td><td>身分卡、熱格、留言卡、擴散環、私訊格與外流、投票格、班群溫度、當事人回放</td><td>✓（由 iPad 執行；代幣、擴散環、溫度棋子在棋盤上）</td><td>✓</td></tr>
+    <tr><td>只在網頁</td><td>電腦同學與壓力安排、單人體驗、展示版、自評、訪談頁、CSV、音效</td><td>—</td><td>✓</td></tr>
+  </table></div>
+</section>
+
+<section id="s18"><h2><span class="n">18</span>P0 測試</h2>
+  <h3>要驗證</h3>
+  <ol>
+    <li>有／無身分卡兩組，紅色數量與首次定罪格的差異（學生會不會「演好學生」）</li>
+    <li>跟隨率：前面有紅色 vs 沒有紅色時的差距</li>
+    <li>4 人、6 人的實際總時間（目標 ≤ 42 分鐘＋討論）</li>
+    <li>熱格有沒有讓「查」變少、紅色變多</li>
+    <li>回放與事件回顧後，每人說的第一句話（逐字）</li>
+    <li>擴散環、溫度的步數是否合理</li>
+    <li>中段是否仍覺得重複：記下每桌第幾格開始有人分心</li>
+    <li>私訊被截圖時的反應（逐字）</li>
+  </ol>
+  <p>建議：實體代幣＋iPad 開桌遊模式（勾選實體代幣、訪談場次），資料自動存成 CSV。至少 4–5 桌。</p>
+  <h3>沒有 iPad 的紙本跑法</h3>
+  <p>一位組員扮演「班群」：依第 14 節朗讀事件、遞查詢卡（看 10 秒收回）、倒數熱格、依第 8 節唸回聲；用第 9 節紙本整數規則移溫度棋子；留言卡印成紙條，寫上代號後堆在「班群紀錄紙」，結尾唸作「子晴的手機收到……」。另一人記錄或錄影。</p>
+</section>
+
+<section id="s19"><h2><span class="n">19</span>版本紀錄</h2>
+  <ul>
+    <li><b>v1.0（New）</b>：18 格 S1、說查傳等、三色代幣、首位輪替、班群回聲、多重結局、事件回顧、帶領卡。</li>
+    <li><b>v1.1</b>：身分卡、熱格、留言卡、擴散環、當事人視角回放與影響鏈。</li>
+    <li><b>v1.2</b>：私訊格與外流、投票格、班群溫度；熱格改為第 2、5、10 格；補回「傳可選內容」與第 18 格傳舊截圖；網頁桌遊模式、展示版。</li>
+  </ul>
+</section>
+</main>
+</div>
+<script>
+// 本機檔名與線上檔名不同：讓按鈕在兩邊都能用
+if(new URLSearchParams(location.search).has('embed')){ document.querySelector('header .btns').style.display='none'; }
+if(location.protocol==='file:'){ document.getElementById('lnkPlay').href='慢一拍_班群風暴_試玩.html'; document.getElementById('lnkShow').href='慢一拍_班群風暴_試玩.html?show'; }
+</script>
+</body>
+</html>

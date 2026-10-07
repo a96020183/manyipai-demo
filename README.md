@@ -6,6 +6,8 @@
 
 **線上試玩：** https://a96020183.github.io/manyipai-demo/
 
+**規格說明（組員必讀）：** https://a96020183.github.io/manyipai-demo/spec.html
+
 ## 三種玩法
 
 - **🎲 桌遊模式**：4–6 人圍著桌子，這台裝置放在中間當「班群」（正式版玩法；2–3 人可練習，會補電腦同學）。
