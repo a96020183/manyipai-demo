@@ -121,7 +121,14 @@ button{font-family:inherit;font-size:inherit;color:inherit;cursor:pointer;border
 .rg .lamp{width:9px;height:9px;border-radius:50%;background:#D6CFC4;flex:none;transition:.3s}
 .rg.on{background:#FFF1E2;color:#9A4A00;font-weight:600}.rg.on .lamp{background:#F08A24;box-shadow:0 0 6px 2px rgba(240,138,36,.55)}
 .rg.on.fix{background:#E5F5EC;color:#1D6B47}.rg.on.fix .lamp{background:#2E9E6B;box-shadow:0 0 6px 2px rgba(46,158,107,.5)}
-#ringleg{font-size:10.5px;color:var(--muted);margin-top:3px}
+@media (min-width:880px){
+  #side>#sheet{position:sticky;bottom:0;z-index:5;background:var(--bg);box-shadow:0 -12px 14px -12px rgba(0,0,0,.22)}
+  body.deskboard #table{display:grid;grid-template-columns:1fr 1.8fr;column-gap:8px}
+  body.deskboard #table>*{grid-column:1/-1}
+  body.deskboard #table>#heat{grid-column:1}body.deskboard #table>#rings{grid-column:2}
+  body.deskboard #table>#heat,body.deskboard #table>#rings{margin-top:9px;padding:6px 8px}
+  body.deskboard #ringbar{gap:4px}body.deskboard .rg{font-size:11px;gap:3px;padding:3px 0}body.deskboard .rg .lamp{width:7px;height:7px}
+}
 .coach-hl{outline:3px solid #F08A24!important;outline-offset:3px;animation:coachp 1.2s infinite}
 @keyframes coachp{50%{outline-color:rgba(240,138,36,.25)}}
 .coach-blk{position:fixed;inset:0;z-index:3000;background:rgba(20,25,35,.08)}
@@ -505,9 +512,8 @@ body.bigtext .poll .pq{font-size:16px}body.bigtext .po{font-size:15.5px}
         </div>
         <div id="heat"><div class="ht"><span>🌡️ 班群溫度</span><span id="heattxt"><b>冷靜</b></span></div><div id="heatbar"><i></i></div></div>
         <div id="rings">
-          <div class="rt"><span>擴散環：截圖傳到哪裡</span><span id="ringtxt">只在本班</span></div>
+          <div class="rt"><span>擴散環：截圖傳到哪裡</span></div>
           <div id="ringbar"><div class="rg" data-i="0">本班</div><div class="rg" data-i="1">同年級</div><div class="rg" data-i="2">全校</div><div class="rg" data-i="3">校外</div></div>
-          <div id="ringleg">🟠 燈亮＝被裁過的截圖傳到那裡</div>
         </div>
         </div></div>
       </div>
@@ -694,7 +700,7 @@ const G = [
     a.red晴>=2&&a.red晴>a.red希*2? {who:'阿哲',t:'有幾個人覺得子晴在說妍希。'} :
     (a.red晴+a.red希>0)? {who:'阿哲',t:'有人覺得是，也有人說還不能確定。'} :
     {who:'阿哲',t:'目前只有截圖跟走廊那件事。'}]}},
- {n:4,ty:'i',t:'以前也發生過？',clk:'20:06',ev:{晴:.35},
+ {n:4,ty:'s',t:'以前也發生過？',clk:'20:06',ev:{晴:.35},
   msgs:()=>[{who:'佳恩',t:'我上學期跟子晴同組，有人沒做事，她會直接在群組點名。'}],
   chk:{who:'佳恩（私訊）',t:'佳恩傳來當時的訊息：「分工表寫很清楚，你那段還沒交。」她說：「那次真的有人沒交。跟這次有沒有關係，我不知道。」',s:'上次是真的有人沒交，跟這次有沒有關係不知道'},
   echo:s=> s.red晴? {who:'阿哲',t:'所以不是第一次有人覺得她講話很衝？'} : (s.yel||s.grn||s.share)? {who:'阿哲',t:'上次是真的，但這次要另外看。'} : null},
@@ -732,14 +738,14 @@ const G = [
     {who:'阿哲',t:'吵這麼久，乾脆投票好了👇'}]}},
  {n:13,ty:'s',t:'另一件被忽略的事',clk:'21:55',ev:{晴:-.3,希:-.25},
   msgs:()=>[{who:'同組同學',t:'我翻到報告群組 17:50 的訊息👇'},{story:'報告群組・週三 17:50',who:'同組同學',t:'簡報那件事，到底要不要先跟老師講？'},{sys:'這比截圖和限動都還早'}]},
- {n:14,ty:'i',t:'那句話是在問什麼？',clk:'22:06',ev:{晴:-.25,希:-.25},
+ {n:14,ty:'s',t:'那句話是在問什麼？',clk:'22:06',ev:{晴:-.25,希:-.25},
   msgs:()=>[{who:'同組同學',t:'我下午聽到子晴問妍希：「妳為什麼就是不跟老師講？」後面沒聽到。'}],
   chk:{who:'同組同學（私訊）',t:'他還聽到妍希回：「我不想把事情弄大。」但要跟老師講什麼，他不知道。',s:'妍希回「我不想把事情弄大」，但不知道是什麼事'},
   echo:s=> (s.red晴||s.red希)? {who:'阿哲',t:'等等，她們要跟老師講什麼？'} : (s.yel||s.grn||s.share)? {who:'阿哲',t:'所以走廊那段，還不知道在吵什麼。'} : null},
  {n:15,ty:'s',t:'誰決定她上台？',clk:'22:18',ev:{晴:-.4},
   msgs:()=>{const a=tally(1,14);const r=[{who:'同組同學',t:'分工表：妍希做圖表，子晴負責上台。老師另外請子晴補充，所以她講比較久。'}];
     if(a.red晴>=2) r.push({who:'阿哲',t:'原來上台是分工裡就有的。'}); return r}},
- {n:16,ty:'i',t:'傳圖者的說明',clk:'22:31',ev:{希:-.45,晴:-.15},
+ {n:16,ty:'s',t:'傳圖者的說明',clk:'22:31',ev:{希:-.45,晴:-.15},
   msgs:()=>[{who:'小岑',t:'圖是我貼的，不是妍希叫我貼的。我找到原對話的人了，他在確認能不能公開。'}],
   chk:{who:'小岑（私訊）',t:'小岑：「我先看到限動，又收到佳恩傳的圖，以為有關就貼了，沒先問妍希。」（這是她的說法）',s:'小岑自己把限動跟截圖連在一起，沒先問妍希'},
   echo:s=> (s.yel||s.grn||s.share)? {who:'阿哲',t:'那先看完整對話再說。'} : s.red希? {who:'阿哲',t:'有人覺得她在幫朋友講話，但也沒新證據。'} : null},
@@ -808,10 +814,7 @@ function renderRings(pulse){
     el.innerHTML = '<span class="lamp"></span>'+RING[i];
     if(pulse && i===st){ el.classList.remove('pulse'); void el.offsetWidth; el.classList.add('pulse'); }
   });
-  let txt = st===0 ? (S.grayPts? `本班（轉傳 ${S.grayPts} 次）`:'只在本班') : `已傳到${RING[st]}`;
-  if(S.white>=1) txt += `｜完整資訊到：${RING[S.white]}`;
-  $('#ringtxt').textContent = txt;
-  $('#ringleg').textContent = S.white>=0 ? '🟠 只有被裁過的截圖　🟢 完整對話也到了' : '🟠 燈亮＝被裁過的截圖傳到那裡';
+
 }
 const heatLv = h => h>=55?2:h>=30?1:0;
 function renderHeat(delta){
@@ -1383,7 +1386,7 @@ function computeEnding(){
   const t=tally(1,16), st=grayStage();
   const H=humans(), nh=H.length||1;
   const hl=S.log.filter(e=>e.human&&e.g<=16&&(e.a==='say'||e.a==='vote'));
-  const k = S.quick ? .8 : 1;   // 快速版互動格較少，門檻等比例縮小
+  const k = .8;   // v1.3 互動格由 13 減為 10，門檻等比例縮小
   const T = k*12 + (.2*hl.filter(e=>e.col==='grn').length + .15*hl.filter(e=>e.col==='yel').length)/nh - 2.5*st;
   const W={晴:0,希:0}; S.log.forEach(e=>{ if(PUBLIC_RED(e)&&e.g<=16) W[e.tg]+=e.g>=8?1.6:1; });
   let who='none';
@@ -1645,7 +1648,7 @@ function closingHTML(){
     <div class="card"><div class="kick">正式版</div><h3 style="margin:6px 0">4–6 位真人同學，圍著同一張桌子玩</h3>
       <img src="${BOARD}" alt="慢一拍：班群風暴 實體棋盤示意" style="width:100%;border-radius:10px;margin:6px 0">
       <p class="mini" style="margin:4px 0 0">${solo()?'今天的電腦同學，在正式版是坐在你旁邊的真人。':'你們剛剛玩的，就是正式版放在桌子中間的那台平板。'}代幣放在桌上，所有人都看得見。</p>
-      <p class="mini" style="margin:6px 0 0"><b>一節課怎麼用：</b>4–5 人一桌，遊戲約 35 分鐘，接著老師用 3 個問題帶 10 分鐘討論。任何人都可以隨時退出；建議和輔導室一起進行。</p></div>
+      <p class="mini" style="margin:6px 0 0"><b>一節課怎麼用：</b>4–5 人一桌，遊戲約 30 分鐘，接著老師用 3 個問題帶 10 分鐘討論。任何人都可以隨時退出；建議和輔導室一起進行。</p></div>
     <button class="btn pri full" id="toIv" style="margin-top:16px">給訪談員 →</button>
     <p style="text-align:center"><button class="btn ghost" onclick="location.reload()">再玩一次</button></p>
     <p class="care">這是虛構的故事。如果它讓你想起不舒服的經驗，可以跟信任的人聊聊：安心專線 1925（24 小時）｜教育部反霸凌專線 0800-200-885</p>`;
@@ -1758,7 +1761,7 @@ function humanSummary(h){
 }
 function sessionSummary(){
   const E=S.E||computeEnding();
-  return {id:S.id,mode:(solo()?'單人':'桌遊模式')+(S.quick?'・快速版':'')+(S.mild?'・溫和結局':''),ending:WHO[E.who],level:E.lv,gray:RING[grayStage()],white:S.white>=1?RING[S.white]:'只在本班',heatPeak:Math.round(S.heatPeak),
+  return {id:S.id,mode:(solo()?'單人':'桌遊模式')+(S.mild?'・溫和結局':''),ending:WHO[E.who],level:E.lv,gray:RING[grayStage()],white:S.white>=1?RING[S.white]:'只在本班',heatPeak:Math.round(S.heatPeak),
     minutes:Math.round((Date.now()-S.start)/6000)/10,tableRed:tally(1,16),humans:humans().map(humanSummary)};
 }
 function summaryText(){
@@ -1853,15 +1856,13 @@ function intro(){
             <p class="mini" style="margin:6px 0 2px">名字（照座位順時針填，會出現在桌上和班群）</p>${[...Array(cnt).keys()].map(i=>`<input class="nm-in" data-i="${i}" maxlength="6" placeholder="玩家${i+1}" value="${esc(names[i]||'')}">`).join('')}
             ${cnt<4?'<p class="mini" style="margin:4px 0 0">正式版是 4–6 人；少於 4 人會補電腦同學。</p>':''}
             <label class="ck"><input type="checkbox" id="phys" ${phys?'checked':''}> 桌上有實體棋盤和代幣（iPad 只顯示班群大字，並提醒放代幣、移溫度棋子、交首位標記）</label>
-            <label class="ck"><input type="checkbox" id="quick" ${quick?'checked':''}> ⏱ 班會課快速版（約 30 分鐘：第 4、14、16 格改為只讀）</label>
             <label class="ck"><input type="checkbox" id="mild" ${mild?'checked':''}> 🌙 溫和結局（不出現轉學等最重的結局；適合可能有相關經驗的班級）</label>
             <label class="ck"><input type="checkbox" id="rsch" ${rsch?'checked':''}> 這是訪談／測試場次（加入開始前與玩完後的自評、訪談頁）</label></div>`}
         <button class="btn pri full" id="go">下一步</button></div></div>`;
         ov.querySelectorAll('.modepick button').forEach(b=>b.onclick=()=>{ keep(); m=b.dataset.m; draw(); });
         ov.querySelectorAll('.cnt button').forEach(b=>b.onclick=()=>{ keep(); cnt=+b.dataset.c; draw(); });
         $('#go').onclick=()=>{
-          keep(); S.mode=m; S.physical=m==='multi'&&phys; S.research=m==='solo'||rsch; S.quick=m==='multi'&&quick; S.mild=m==='multi'&&mild;
-          if(S.quick){ G.forEach(x=>{ if([4,14,16].includes(x.n)){ x.ty='s'; delete x.hot; } }); buildProg(); }
+          keep(); S.mode=m; S.physical=m==='multi'&&phys; S.research=m==='solo'||rsch; S.mild=m==='multi'&&mild;
           document.body.classList.toggle('bigtext',m==='multi'); document.body.classList.toggle('physical',S.physical); layout();
           if(m==='solo'){ S.nick=($('#nick').value||'').trim()||'小安'; setupPlayers(['你']); }
           else { const nm=[...ov.querySelectorAll('.nm-in')].map((x,i)=>(x.value||'').trim()||`玩家${i+1}`); setupPlayers(nm); }
@@ -1923,7 +1924,7 @@ function intro(){
     if(AUTO){
       S.mode=MULTI_AUTO?'multi':'solo';
       if(MULTI_AUTO) setupPlayers([...Array(MULTI_AUTO).keys()].map(i=>`玩家${i+1}`)); else { S.nick='小安'; setupPlayers(['你']); }
-      if(Q.has('quick')){ S.quick=true; G.forEach(x=>{ if([4,14,16].includes(x.n)){ x.ty='s'; delete x.hot; } }); buildProg(); } S.mild=Q.has('mild');
+      S.mild=Q.has('mild');
       humans().forEach(h=>h.pre={q1:pick(PRE_QS[0][2]),q2:pick(PRE_QS[1][2])}); res(); return;
     }
     p1();
