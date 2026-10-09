@@ -117,9 +117,17 @@ button{font-family:inherit;font-size:inherit;color:inherit;cursor:pointer;border
 #rings .rt{display:flex;justify-content:space-between;font-size:11px;color:var(--muted)}
 #ringbar{display:grid;grid-template-columns:repeat(4,1fr);gap:4px;margin-top:5px}
 .rg{border-radius:7px;background:#F1ECE3;font-size:11.5px;text-align:center;padding:4px 0;position:relative;transition:.3s}
-.rg.gray{background:#B7B0A6;color:#fff}
+.rg{display:flex;align-items:center;justify-content:center;gap:5px}
+.rg .lamp{width:9px;height:9px;border-radius:50%;background:#D6CFC4;flex:none;transition:.3s}
+.rg.on{background:#FFF1E2;color:#9A4A00;font-weight:600}.rg.on .lamp{background:#F08A24;box-shadow:0 0 6px 2px rgba(240,138,36,.55)}
+.rg.on.fix{background:#E5F5EC;color:#1D6B47}.rg.on.fix .lamp{background:#2E9E6B;box-shadow:0 0 6px 2px rgba(46,158,107,.5)}
+#ringleg{font-size:10.5px;color:var(--muted);margin-top:3px}
+.coach-hl{outline:3px solid #F08A24!important;outline-offset:3px;animation:coachp 1.2s infinite}
+@keyframes coachp{50%{outline-color:rgba(240,138,36,.25)}}
+.coach-blk{position:fixed;inset:0;z-index:3000;background:rgba(20,25,35,.08)}
+.coach-card{position:fixed;left:50%;top:12px;z-index:3001;transform:translateX(-50%);width:min(420px,calc(100% - 32px));background:#fff;border-radius:14px;padding:14px 16px;box-shadow:0 10px 30px rgba(0,0,0,.25)}
+.coach-card h3{margin:4px 0 6px;font-size:18px}.coach-card p{margin:0 0 10px;font-size:14.5px;line-height:1.7}
 .rg.pulse{animation:pulse .7s}
-.rg .wd{position:absolute;right:4px;top:50%;margin-top:-5px;width:10px;height:10px;border-radius:50%;background:#fff;border:2px solid var(--accent)}
 @keyframes pulse{50%{transform:scale(1.08);background:#8D8780}}
 
 /* ---------- sheet ---------- */
@@ -474,7 +482,7 @@ body.bigtext .poll .pq{font-size:16px}body.bigtext .po{font-size:15.5px}
     <div class="ttl">慢一拍</div>
     <div id="prog"></div>
     <div id="gridlbl"></div>
-    <button id="idpill" class="hidden">🎭 身分・筆記</button>
+    <button id="idpill" class="hidden">🔒 只有我知道</button>
     <button id="specbtn" title="規格說明（開啟時遊戲暫停）">ⓘ 規格</button>
     <button id="pause" class="hidden">⏸ 暫停</button>
     <button id="snd" title="音效開關">🔊</button>
@@ -497,8 +505,9 @@ body.bigtext .poll .pq{font-size:16px}body.bigtext .po{font-size:15.5px}
         </div>
         <div id="heat"><div class="ht"><span>🌡️ 班群溫度</span><span id="heattxt"><b>冷靜</b></span></div><div id="heatbar"><i></i></div></div>
         <div id="rings">
-          <div class="rt"><span>擴散環：截圖已經傳到哪裡</span><span id="ringtxt">只在本班</span></div>
+          <div class="rt"><span>擴散環：截圖傳到哪裡</span><span id="ringtxt">只在本班</span></div>
           <div id="ringbar"><div class="rg" data-i="0">本班</div><div class="rg" data-i="1">同年級</div><div class="rg" data-i="2">全校</div><div class="rg" data-i="3">校外</div></div>
+          <div id="ringleg">🟠 燈亮＝被裁過的截圖傳到那裡</div>
         </div>
         </div></div>
       </div>
@@ -621,20 +630,14 @@ const NPC_POOL = [
 ];
 const HUM_LOOK = [{em:'🙂',c:'#1F3B5C'},{em:'😎',c:'#9C3D54'},{em:'🤓',c:'#3D6B9C'},{em:'🦊',c:'#B5651D'},{em:'🐻',c:'#6B4F3A'},{em:'🐱',c:'#5A7D2B'}];
 
-/* ---------------- 身分卡 ---------------- */
+/* ---------------- 你知道的事（每人一張，只有自己看過；不給身分、不給目標） ---------------- */
 const IDS = [
-  {k:'friend', t:'子晴的國小同學', know:'子晴講話一向很直，但你不覺得她會故意欺負人。',
-   goal:'在有人指責子晴的那一格，至少一次放下綠色（介入）。', pull:'想護朋友，又怕被說在護航'},
-  {k:'seat', t:'妍希的座位鄰居', know:'你常看到妍希下課還在改報告的圖表。',
-   goal:'第 8 格以前，至少一次公開替妍希抱不平（放下指向子晴的紅色）。', pull:'先入為主'},
-  {k:'news', t:'班上的消息靈通人士', know:'大家有什麼事，都會先來問你。',
-   goal:'至少兩次成為該格第一個「說」或「傳」的人。', pull:'搶快、搶先發布'},
-  {k:'new', t:'剛轉來的同學', know:'你還在找可以一起吃午餐的人。',
-   goal:'第 9 格以前，至少兩次和前面已出現的紅色放同一個方向。', pull:'從眾、怕成為唯一的不同意見'},
-  {k:'old', t:'上學期被子晴點名的人', know:'那次子晴在群組點名你沒交作業——你確實沒交。（就是第 4 格佳恩會提到的那件事）',
-   goal:'整場都不要公開指責子晴（不放指向子晴的紅色）。', pull:'舊帳帶來的偏見'},
-  {k:'lead', t:'班級幹部', know:'導師說過：「班上的事不要鬧到外面。」',
-   goal:'第 17 格以前，讓截圖不要傳出本班（擴散環一直停在「本班」）。', pull:'介入，還是把事情壓下來'},
+  {k:'seat',   t:'改圖表',     know:'你看過妍希下課還在改報告的圖表。'},
+  {k:'news',   t:'不想上台',   know:'你聽人說，妍希原本就不想上台報告。（真假不明）'},
+  {k:'old',    t:'點名舊事',   know:'子晴上學期在群組點名過沒交作業的人。'},
+  {k:'friend', t:'講話很直',   know:'你聽說子晴講話一向很直，但沒聽過她針對誰。'},
+  {k:'lead',   t:'誰拿走簡報', know:'那天下午，子晴在報告群組問過：「是誰把簡報拿走的？」'},
+  {k:'new',    t:'貼圖前的猶豫', know:'小岑貼圖以前，在別的群組問過：「這樣貼會不會不好？」'},
 ];
 const PERS = {
   friend:{red:.55,yel:1.1,grn:1.0,chk:1.0,spr:.15,wait:1.0,bias:{晴:.45,希:1},conf:.35},
@@ -801,13 +804,14 @@ function renderRings(pulse){
   const st=grayStage();
   document.querySelectorAll('.rg').forEach(el=>{
     const i=+el.dataset.i;
-    el.classList.toggle('gray', S.grayPts>0 && i<=st);
-    el.innerHTML = RING[i] + (S.white>=i ? '<span class="wd" title="完整資訊已到達"></span>':'');
+    el.classList.toggle('on', i<=st); el.classList.toggle('fix', S.white>=i);
+    el.innerHTML = '<span class="lamp"></span>'+RING[i];
     if(pulse && i===st){ el.classList.remove('pulse'); void el.offsetWidth; el.classList.add('pulse'); }
   });
   let txt = st===0 ? (S.grayPts? `本班（轉傳 ${S.grayPts} 次）`:'只在本班') : `已傳到${RING[st]}`;
   if(S.white>=1) txt += `｜完整資訊到：${RING[S.white]}`;
   $('#ringtxt').textContent = txt;
+  $('#ringleg').textContent = S.white>=0 ? '🟠 只有被裁過的截圖　🟢 完整對話也到了' : '🟠 燈亮＝被裁過的截圖傳到那裡';
 }
 const heatLv = h => h>=55?2:h>=30?1:0;
 function renderHeat(delta){
@@ -837,12 +841,11 @@ function renderCtx(){
   const kind = g.ty==='s'?'劇情格：只看，不用行動':g.ty==='r'?'真相揭露':g.ty==='v'?'📊 投票格：每人依序投一票':g.hot?'🔥 熱格：每人只有 10 秒':g.dm?'💬 私訊格：有人會收到一則私訊':'互動格：每人選一個行動';
   let priv='';
   if(solo()){
-    const me=S.players[0]; const ok=goalCheck(me);
-    const notes = me.notes.length ? me.notes.map(n=>`<div class="note">第 ${n.g} 格｜${esc(n.s)}${n.shared?' <span class="mini">（已公開）</span>':''}</div>`).join('') : '<div class="mini">還沒有。用「查」私訊問人，查到的會記在這裡；想讓大家知道，要用「說」講出來。</div>';
-    priv=`<div class="card"><h4>你的身分（只有你知道）</h4><b>${esc(me.ident.t)}</b><div class="mini" style="margin-top:4px">目標：${esc(me.ident.goal)}</div><div class="${ok?'ok':'mini'}" style="margin-top:4px;font-size:12.5px">${ok?'目前：✓ 達成':'目前：還沒達成'}</div></div>
-      <div class="card wide"><h4>你私下查到的</h4>${notes}</div>`;
+    const me=S.players[0];
+    const notes = me.notes.length ? me.notes.map(n=>`<div class="note">${n.g?'第 '+n.g+' 格':'開局就知道'}｜${esc(n.s)}${n.shared?' <span class="mini">（已公開）</span>':''}</div>`).join('') : '<div class="mini"></div>';
+    priv=`<div class="card wide"><h4>只有你知道的</h4>${notes}<div class="mini" style="margin-top:4px">想讓大家知道，要用「說」講出來。</div></div>`;
   } else if(S.show) priv=`<div class="card"><h4>🎬 展示版</h4><div class="mini">小安是示範玩家，阿凱、小芸、宥廷是同桌同學。所有動作自動進行；可按上方「⏸ 暫停」或「⏩ 快轉」。</div></div>`;
-  else priv=`<div class="card"><h4>多人同機</h4><div class="mini">身分卡和查到的線索是私人的，請用上方「🎭 身分・筆記」，確認其他人轉開後再看。說話請直接用嘴巴講，再選一張留言卡。</div></div>`;
+  else priv=`<div class="card"><h4>多人同機</h4><div class="mini">你知道的事和查到的線索是私人的，請用上方「🔒 只有我知道」，確認其他人轉開後再看。說話請直接用嘴巴講，再選一張留言卡。</div></div>`;
   $('#ctx').innerHTML = `<div class="card"><h4>這一格</h4><b>第 ${g.n} 格・${esc(g.t)}</b><div class="mini" style="margin-top:4px">${kind}</div></div>${priv}`;
 }
 
@@ -1022,6 +1025,27 @@ function privateCard(p,html,btn='看完了'){
 
 /* ---------------- 真人玩家回合 ---------------- */
 let firstTurnTip=true, firstHotTip=true;
+function coach(){
+  const steps=[
+    ['#chat','這是班群','二年三班的班群。每一格會跳出新訊息，'+(solo()?'你和同學':'大家')+'輪流做一件事。'],
+    ['#panel .acts','每次選一件事','💬 <b>說</b>：公開講一句，放一顆代幣，留言會一直留在班群<br>🔍 <b>查</b>：私下問人，只有'+(solo()?'你':'自己')+'看得到，不一定對<br>📤 <b>傳</b>：把截圖轉到別的群組，傳出去就收不回<br>👀 <b>等</b>：這次先不動'],
+    ['#zone','代幣的顏色','選「說」的時候放一顆：<br>🔴 已經有判斷了　🟡 資訊還不夠　🟢 先阻止攻擊或擴散<br>後面的人都看得到前面放了什麼。'],
+    ['#rings','溫度和擴散','🌡️ 罵的人越多，班群越熱。<br>擴散環的燈亮到哪裡，截圖就傳到哪裡。'],
+    [null,'第 1 格不計時','慢慢試，沒有標準答案。'],
+  ];
+  return new Promise(res=>{ let i=0;
+    const blk=document.createElement('div'); blk.className='coach-blk'; document.body.appendChild(blk);
+    const clear=()=>document.querySelectorAll('.coach-hl').forEach(e=>e.classList.remove('coach-hl'));
+    const done=()=>{ clear(); blk.remove(); res(); };
+    const show=()=>{ clear();
+      const [sel,t,d]=steps[i], el=sel&&document.querySelector(sel);
+      if(el&&el.offsetParent){ el.classList.add('coach-hl'); el.scrollIntoView({block:'nearest'}); }
+      const low=el&&el.offsetParent&&el.getBoundingClientRect().top<innerHeight*.45;
+      blk.innerHTML=`<div class="coach-card" style="${low?'top:auto;bottom:12px':''}"><div class="kick">新手引導 ${i+1}／${steps.length}</div><h3>${t}</h3><p>${d}</p><div class="row2"><button class="btn ghost" id="cskip">跳過</button><button class="btn pri" id="cnext">${i<steps.length-1?'下一步':'開始'}</button></div></div>`;
+      blk.querySelector('#cnext').onclick=()=>{ if(++i<steps.length) show(); else done(); };
+      blk.querySelector('#cskip').onclick=done; };
+    show(); });
+}
 function playerTurn(g,p){
   return new Promise(resolve=>{
     const t0=performance.now(); let done=false, timer=null;
@@ -1056,6 +1080,7 @@ function playerTurn(g,p){
       </div>
       ${firstTurnTip?`<div class="tip">💡 四個都可以選，沒有標準答案。${solo()?'你的「說」會變成班群裡的一則留言，也會被後面的人看到。':'「說」的時候請直接用嘴巴講出你的想法，再選一張最接近的留言卡。'}</div>`:''}
       ${g.hot&&firstHotTip?`<div class="tip" style="background:#FDE8E8;border-color:#F2B8BA;color:#8C1D22">🔥 熱格：只有 10 秒。時間到就算「等」。</div>`:''}`);
+      if(firstTurnTip&&!S.show) requestAnimationFrame(()=>coach());
       firstTurnTip=false; requestAnimationFrame(scrollChat);
       $('#panel').querySelectorAll('.act').forEach(b=>b.onclick=()=>{
         const a=b.dataset.a;
@@ -1333,7 +1358,6 @@ async function runGrid(g){
   S.first=(S.first+1)%n;
   await heat(g.n>=13?-8:-5);
   status(summaryLine(s)+(solo()?afterMe(g):'')+(S.physical?`<div class="mini" style="width:100%;margin-top:2px">🎲 收回代幣・棋子前進一格・🌡️ 溫度棋子移到第 <b>${Math.round(S.heat/10)}</b> 格・🚩 首位標記交給 <b>${esc(S.players[S.first].name)}</b></div>`:'')); renderCtx();
-  if(solo()){ const ok=goalCheck(S.players[0]); if(S.goalWas!==undefined&&ok!==S.goalWas){ toast(ok?'🎭 你的私人目標：✓ 達成了':'🎭 你的私人目標：剛剛失敗了',2400); snd(ok?'good':'bad'); } S.goalWas=ok; }
   await waitBtn(g.n===18?'看結局 →':'下一格 →');
 }
 function readAloud(){
@@ -1469,7 +1493,7 @@ async function ending(){
   saveSession();
   if(solo()) mirrorSolo(); else if(S.research&&!S.show) mirrorGroup(); else finalPage();
 }
-/* ---------- 桌遊結尾：事件回顧（New 十五）、身分卡揭露、帶領卡（New 十六／十七） ---------- */
+/* ---------- 桌遊結尾：事件回顧（New 十五）、每人知道的事、帶領卡（New 十六／十七） ---------- */
 function reviewNodes(){
   const L=S.log.filter(e=>e.g<=16&&(e.a==='say'||e.a==='vote')).sort((a,b)=>a.g-b.g||a.pos-b.pos);
   const nodes=[];
@@ -1488,16 +1512,16 @@ function reviewPage(){
     $('#ovl').innerHTML=`<div class="ov"><div class="pg"><div class="kick">事件回顧（約 3 分鐘）</div><h2 style="margin-top:4px">回頭看三個時刻</h2>
       <p class="sub">每一則，請當事人用一句話說說看：當時為什麼這樣選？</p>
       ${nodes.length?nodes.map((n,i)=>`<div class="card rv"><span class="rvn">${i+1}</span>${esc(n)}</div>`).join(''):'<div class="card">這一桌沒有出現明確的公開判斷。說說看：是什麼讓你們一直停在「再等等」？</div>'}
-      <button class="btn pri full" id="go">身分卡揭曉 →</button></div></div>`;
+      <button class="btn pri full" id="go">每人知道的事 →</button></div></div>`;
     $('#go').onclick=res; $('#ovl .ov').scrollTop=0;
     cap('桌遊的結尾：系統挑出三個關鍵時刻，請當事人說說當時為什麼這樣選。',7000); autoClick('#go',10000);
   });
 }
 function idRevealPage(){
   return new Promise(res=>{
-    $('#ovl').innerHTML=`<div class="ov"><div class="pg">${idRevealHTML()}<p style="margin-top:12px">每個人用一句話回答：<b>你的私人目標達成了嗎？為了它，你做了什麼？</b></p><button class="btn pri full" id="go">帶領卡 →</button></div></div>`;
+    $('#ovl').innerHTML=`<div class="ov"><div class="pg">${idRevealHTML()}<p style="margin-top:12px">每個人唸出自己那張，用一句話回答：<b>你有講出來嗎？什麼時候講的？為什麼？</b></p><button class="btn pri full" id="go">帶領卡 →</button></div></div>`;
     $('#go').onclick=res; $('#ovl .ov').scrollTop=0;
-    cap('身分卡揭曉：每個人心裡都有一股拉力。',5000); autoClick('#go',8000);
+    cap('每個人一開始都多知道一件事。有人講了，有人沒講。',5000); autoClick('#go',8000);
   });
 }
 const LEAD=[
@@ -1574,22 +1598,14 @@ function statsFor(p){
   const dm=S.log.find(e=>e.who===id&&e.a==='dm'), leak=S.log.find(e=>e.who===id&&e.a==='leak');
   return {press:press.length,followed:followed.length,clean:clean.length,cleanRed:cleanRed.length,myReds:myReds.length,followers,held,chain,myFirstRed,chkBeforeRed,
     hotS:avg(S.log.filter(e=>e.who===id&&e.hot&&e.ms).map(e=>e.ms)),normS:avg(S.log.filter(e=>e.who===id&&!e.hot&&e.ms&&e.g!==18).map(e=>e.ms)),
-    goal:goalCheck(p),spr:L.filter(e=>e.a==='spr').length,chk:L.filter(e=>e.a==='chk').length,waits:L.filter(e=>e.a==='wait').length,
+    factAt:factShared(p),spr:L.filter(e=>e.a==='spr').length,chk:L.filter(e=>e.a==='chk').length,waits:L.filter(e=>e.a==='wait').length,
     grnVsRed:L.filter(e=>e.col==='grn'&&e.aheadRed>0).length,says:S.log.filter(e=>e.who===id&&e.a==='say').length,
     noteN:p.notes.length,sharedN:p.notes.filter(n=>n.shared).length,red晴:myReds.filter(e=>e.tg==='晴').length,red希:myReds.filter(e=>e.tg==='希').length,
     vote:S.log.find(e=>e.who===id&&e.a==='vote'),dm,leak,timeouts:L.filter(e=>e.timeout).length,
     press1:press1.length,followed1:followed1.length,cool:S.cool[id]||0,grn:L.filter(e=>e.col==='grn').length};
 }
-function goalCheck(p){
-  const L=S.log.filter(e=>e.who===p.id&&e.a!=='dm'&&e.a!=='leak');
-  switch(p.ident.k){
-    case 'friend': return L.some(e=>e.col==='grn'&&S.log.some(x=>x.g===e.g&&x.col==='red'&&x.tg==='晴'&&x.a!=='leak'));
-    case 'seat': return L.some(e=>e.g<8&&e.col==='red'&&e.tg==='晴');
-    case 'news': return L.filter(e=>(e.a==='say'||e.a==='spr')&&!S.log.some(x=>x.g===e.g&&x.pos<e.pos&&(x.a==='say'||x.a==='spr'))).length>=2;
-    case 'new': return L.filter(e=>e.g<9&&e.col==='red'&&e.aheadMaj&&e.tg===e.aheadMaj).length>=2;
-    case 'old': return !L.some(e=>e.col==='red'&&e.tg==='晴');
-    case 'lead': return grayStage()===0;
-  }
+function factShared(p){ // 開局那件事在第幾格被公開；沒講出來回傳 null
+  const e=S.log.find(x=>x.who===p.id&&x.share&&x.t==='我剛問到：'+p.ident.know); return e?e.g:null;
 }
 const pct=(a,b)=>b?Math.round(a/b*100):null;
 const CONF_SAY={'不太會':'不太會跟著前面的人','有時候會':'有時候會跟著','應該會':'應該會跟著'};
@@ -1621,8 +1637,8 @@ function mirrorBody(p,M){
     </div>`;
 }
 function idRevealHTML(){
-  return `<h2>身分卡揭曉</h2><p class="sub" style="margin-top:-4px">每個人心裡都有一股拉力。私人目標讓你做了什麼？</p>
-    <div class="idgrid">${S.players.map(p=>{ const ok=goalCheck(p); return `<div class="card"><div class="t">${p.em} ${esc(p.name)}${p.isHuman&&!p.isMe?'（玩家）':''}</div><div>${p.ident.t}</div><div class="mini" style="margin:4px 0">目標：${p.ident.goal}</div><div class="${ok?'ok':'no'}">${ok?'✓ 達成':'✗ 沒達成'}</div></div>`; }).join('')}</div>`;
+  return `<h2>每人知道的事</h2><p class="sub" style="margin-top:-4px">開局時，每個人都比別人多知道一件事。</p>
+    <div class="idgrid">${S.players.map(p=>{ const at=factShared(p); return `<div class="card"><div class="t">${p.em} ${esc(p.name)}${p.isHuman&&!p.isMe?'（玩家）':''}</div><div style="margin:4px 0">${esc(p.ident.know)}</div><div class="${at?'ok':'no'}">${at?'第 '+at+' 格講出來了':'沒有講出來'}</div></div>`; }).join('')}</div>`;
 }
 function closingHTML(){
   return `<div class="end-hero" style="margin-top:18px"><p style="margin:0">慢一拍，不是不表態。<br>是在表態以前，知道自己的判斷是怎麼來的。</p></div>
@@ -1670,25 +1686,29 @@ function keyTurn(p){
 }
 function actName(e){ if(!e) return ''; if(e.a==='say') return `「說」並放了${CLN[e.col]}（${e.t}）`; if(e.a==='vote') return `投票給「${e.t.replace('投票：','')}」`; return {chk:'「查」',spr:'「傳」',wait:'「等」'}[e.a]; }
 function ivQuestions(){
-  const qs=[];
+  const qs=[{id:'first',q:'回放結束後，他說的第一句話（先別問，等他開口；5 秒沒說話再問「剛剛那段，你看到什麼？」）',ph:'逐字記下'}];
   if(solo()){
-    const me=S.players[0], M=S.M||statsFor(me), k=keyTurn(me);
-    if(k) qs.push({id:'k',q:`第 ${k.g} 格，你是第 ${k.pos} 個行動的人，前面${k.aheadRed?`已經有 ${k.aheadRed} 顆紅色`:'還沒有紅色'}。你選了${actName(k)}。當下在想什麼？`});
-    if(M.leak) qs.push({id:'leak',q:`第 11 格，你在私訊裡說的「${M.dm.t}」被截圖貼進了班群。看到的那一刻，你的第一個反應是什麼？`});
-    qs.push({id:'q1',q:M.says?'回放裡看到自己留下的那幾句話時，你的第一個感覺是什麼？':'整場你都沒有在班群說話。是什麼讓你選擇不說？'});
+    const me=S.players[0], M=S.M||statsFor(me), k=keyTurn(me), at=factShared(me);
+    if(k) qs.push({id:'k',q:`第 ${k.g} 格他${actName(k)}，那時前面${k.aheadRed?`已經有 ${k.aheadRed} 顆紅色`:'還沒有紅色'}。問：「那時候在想什麼？」`});
+    qs.push({id:'fact',q:at?`開局他知道「${me.ident.know}」，第 ${at} 格講出來了。問：「為什麼選那時候講？」`:`開局他知道「${me.ident.know}」，整場沒講。問：「為什麼沒講？」`});
+    if(M.leak) qs.push({id:'leak',q:`他私訊說的「${M.dm.t}」被截圖貼出來。問：「看到那一刻，你的第一個反應？」`});
+    qs.push({id:'q1',q:M.says?'問：「回放裡看到自己留下的話，有什麼感覺？」':'問：「整場都沒在班群說話，是什麼讓你不說？」'});
   } else {
     const c=biggestCascade();
-    if(c) qs.push({id:'k',q:`第 ${c.g} 格，${c.first} 先放了指向${TG[c.tg]}的紅色，接著 ${c.names.join('、')} 也放了。你們當下各自在想什麼？`});
+    if(c) qs.push({id:'k',q:`第 ${c.g} 格，${c.first} 先放了指向${TG[c.tg]}的紅色，${c.names.join('、')} 也跟著放。問：「你們當下各自在想什麼？」`});
     const d=S.dm&&pById(S.dm.who);
-    if(d) qs.push({id:'leak',q:S.dm.col==='red'?`第 11 格，${d.name}的私訊被截圖貼出來時，你們的反應是什麼？${d.name}自己呢？`:`第 9 格，${d.name}收到了一則私訊。其他人當時有想知道內容嗎？`});
-    qs.push({id:'q1',q:'跟朋友一起玩，你們有沒有在某一格，明明想說不一樣的話卻沒說？'});
+    if(d) qs.push({id:'leak',q:S.dm.col==='red'?`${d.name}的私訊被截圖貼出來。問：「那時大家的反應？${d.name}自己呢？」`:`${d.name}收到一則私訊。問：「其他人當時想知道內容嗎？」`});
+    qs.push({id:'q1',q:'問：「有沒有哪一格，明明想說不一樣的話卻沒說？」'});
   }
-  qs.push({id:'q2',q:'真實的班群裡，你遇過類似的事嗎？那時你做了什麼？沒做什麼？'});
-  qs.push({id:'q3',q:'遊戲裡哪個地方讓你覺得「很真實」？哪裡讓你覺得很假？'});
-  qs.push({id:'q4',q:solo()?'如果是在班上和同學一起玩（實體桌遊），你覺得會跟現在不一樣嗎？為什麼？':'如果是在班上，和不太熟的同學一起玩，你覺得會不一樣嗎？'});
-  qs.push({id:'q5',q:'（老師／輔導老師）你會在哪一節課用它？最大的顧慮是什麼？'});
+  qs.push({id:'q2',q:'問：「真實的班群裡遇過類似的事嗎？那時你做了什麼？沒做什麼？」'});
+  qs.push({id:'q4',q:solo()?'問：「如果在班上和同學一起玩，會跟現在不一樣嗎？」':'問：「如果和不太熟的同學一起玩，會不一樣嗎？」'});
+  qs.push({id:'obs',q:'你的觀察（不用問）：第幾格開始分心？哪裡卡住？有沒有問「要選什麼才對」？',ph:'例：第 11 格開始滑手機；熱格看不懂'});
   return qs;
 }
+const TEACHER_QS=[{id:'t1',q:'問：「上一次班上發生類似的事，你什麼時候知道？怎麼處理？」'},
+  {id:'t2',q:'問：「如果要你在班上帶這個遊戲，哪一段你會擔心？」'},
+  {id:'t3',q:'問：「哪一節課放得進 45 分鐘？」'}];
+const FORM_URL='https://docs.google.com/forms/d/e/1FAIpQLSdhxh_-pIke17q6MdGloFRqiEEigRfRW3Q-nZY-hWZkuryG5A/viewform';
 function aggHTML(){
   const ss=loadSessions(); if(!ss.length) return '';
   let pr=0,pf=0,cl=0,cr=0,nP=0,gapN=0;
@@ -1703,22 +1723,30 @@ function aggHTML(){
     <p class="mini">次數：${cr}/${cl} 與 ${pf}/${pr}。電腦同學只決定「壓力出不出現」；壓力出現後要不要跟，是受訪者自己的選擇。<br>開始前說自己「不太會」跟著前面的人、卻在壓力下跟過的：${gapN} 人。</p></div>`;
 }
 function interviewer(){
-  const qs=ivQuestions(); S.ivq=qs;
+  const qs=ivQuestions(); S.ivq=qs.concat(TEACHER_QS);
+  const qHTML=list=>list.map((q,i)=>`<div class="q"><b>${i+1}.</b> ${esc(q.q)}<textarea data-i="${q.id}" placeholder="${q.ph||'逐字記下他的回答'}">${esc(S.answers[q.id]||'')}</textarea></div>`).join('');
   $('#ovl').innerHTML=`<div class="ov"><div class="pg">
-    <div class="kick">給訪談員</div><h2 style="margin-top:4px">接著問這幾題</h2>
-    <p class="sub">依這一局的紀錄自動帶入。請受訪者用自己的話回答；逐字記下${solo()?'':'（多人時請標註是誰說的）'}。</p>
-    <div class="qs">${qs.map(q=>`<div class="q">${esc(q.q)}<textarea data-i="${q.id}" placeholder="逐字記下受訪者的回答">${esc(S.answers[q.id]||'')}</textarea></div>`).join('')}</div>
+    <div class="kick">給訪談員</div><h2 style="margin-top:4px">照順序問，約 5 分鐘</h2>
+    <p class="sub">題目依這一局自動產生。答完再追一句「然後呢？」或「可以多說一點嗎？」；他誤會劇情也<b>不要糾正</b>，記下來就好。${solo()?'':'多人時標註是誰說的。'}</p>
+    <div class="qs">${qHTML(qs)}</div>
+    <details><summary>受訪者是老師？加問這三題</summary><div class="qs">${qHTML(TEACHER_QS)}</div></details>
+    <div class="card" style="text-align:center"><h3 style="margin:0 0 4px">最後：請他掃 QR 填問卷（約 5 分鐘）</h3>
+      <p class="mini" style="margin:0 0 6px">跟他說：場次編號是 <b style="font-size:18px;color:var(--ink)">${S.id}</b></p>
+      <div id="qr" style="display:inline-block;padding:8px;background:#fff"></div>
+      <p class="mini" style="margin:6px 0 0;word-break:break-all"><a href="${FORM_URL}" target="_blank" rel="noopener">開啟問卷連結</a></p></div>
     ${aggHTML()}
     <details><summary>這一局的數據摘要</summary><pre style="white-space:pre-wrap;font-size:12px">${esc(summaryText())}</pre></details>
     <div class="row2" style="flex-wrap:wrap"><button class="btn pri" id="cp">複製摘要</button><button class="btn" id="dlsum">下載訪談摘要（全部場次）</button><button class="btn" id="dla">下載逐步行動紀錄（全部）</button></div>
     <p class="mini">紀錄只存在這台裝置的瀏覽器裡，不會上傳到任何地方。不要清除瀏覽器資料，否則紀錄會消失。</p>
-    <details><summary>給組員：電腦同學怎麼運作</summary><p class="mini">電腦同學各有身分與傾向，會受到劇情證據、桌上代幣（包括真人玩家的）與班群溫度影響。為了讓每位真人玩家都經歷「前面已有兩顆同方向紅色」的情境，前 12 格中，當真人排在第 3 位以後，前面的電腦同學有較高機率放紅色。所以「跟隨率」量的是人在壓力下的反應，不是壓力出現的頻率。多人同機時，真人之間的影響沒有任何安排。</p></details>
+    <details><summary>給組員：電腦同學怎麼運作</summary><p class="mini">電腦同學各有傾向，會受到劇情證據、桌上代幣（包括真人玩家的）與班群溫度影響。為了讓每位真人玩家都經歷「前面已有兩顆同方向紅色」的情境，前 12 格中，當真人排在第 3 位以後，前面的電腦同學有較高機率放紅色。所以「跟隨率」量的是人在壓力下的反應，不是壓力出現的頻率。多人同機時，真人之間的影響沒有任何安排。</p></details>
     <p style="text-align:center;margin-top:18px"><button class="btn ghost" onclick="location.reload()">回到開頭</button></p>
   </div></div>`;
   $('#cp').onclick=()=>{ navigator.clipboard?.writeText(summaryText()).then(()=>toast('已複製')).catch(()=>toast('複製失敗，請手動選取')); };
   $('#dlsum').onclick=()=>download('慢一拍_訪談摘要.csv',toSumCSV(loadSessions()));
   $('#dla').onclick=()=>download('慢一拍_行動紀錄.csv',toCSV(loadSessions()));
   document.querySelectorAll('.q textarea').forEach(t=>t.oninput=()=>{ S.answers[t.dataset.i]=t.value; saveSession(); });
+  const drawQR=()=>{ try{ new QRCode($('#qr'),{text:FORM_URL,width:150,height:150}); }catch(e){} };
+  if(window.QRCode) drawQR(); else { const sc=document.createElement('script'); sc.src='https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js'; sc.onload=drawQR; document.head.appendChild(sc); }
 }
 
 /* ---------------- 紀錄 ---------------- */
@@ -1726,7 +1754,7 @@ function localTime(){ const d=new Date(),z=n=>String(n).padStart(2,'0'); return 
 function humanSummary(h){
   const M=statsFor(h);
   return {name:h.isMe?(S.nick||"你"):h.name,ident:h.ident.t,pre:h.pre||{},post:h.post||{},myFirstRed:M.myFirstRed?M.myFirstRed.g:null,follow:`${M.followed}/${M.press}`,cleanRed:`${M.cleanRed}/${M.clean}`,
-    followers:M.followers,goal:M.goal,hotS:M.hotS,normS:M.normS,dm:M.dm?M.dm.t:'',leaked:!!M.leak,vote:M.vote?M.vote.t.replace('投票：',''):'',timeouts:M.timeouts};
+    followers:M.followers,factAt:M.factAt,hotS:M.hotS,normS:M.normS,dm:M.dm?M.dm.t:'',leaked:!!M.leak,vote:M.vote?M.vote.t.replace('投票：',''):'',timeouts:M.timeouts};
 }
 function sessionSummary(){
   const E=S.E||computeEnding();
@@ -1738,7 +1766,7 @@ function summaryText(){
   return `場次 ${o.id}｜${o.mode}｜結局：${o.ending}（程度 ${o.level}）｜截圖最遠到：${o.gray}｜完整資訊到：${o.white}｜班群溫度最高 ${o.heatPeak}
 全桌紅色：指向子晴 ${o.tableRed.red晴}、指向妍希 ${o.tableRed.red希}｜總時間約 ${o.minutes} 分鐘
 `+o.humans.map(h=>`— ${h.name}（${h.ident}）賽前「${h.pre.q1||'-'}／${h.pre.q2||'-'}」→ 賽後「${h.post.q1||'-'}／${h.post.q2||'-'}」
-  第一次放紅色：${h.myFirstRed?'第 '+h.myFirstRed+' 格':'沒有'}｜壓力下跟隨 ${h.follow}｜無壓力時放紅 ${h.cleanRed}｜之後跟上 ${h.followers} 人｜目標${h.goal?'達成':'未達成'}
+  第一次放紅色：${h.myFirstRed?'第 '+h.myFirstRed+' 格':'沒有'}｜壓力下跟隨 ${h.follow}｜無壓力時放紅 ${h.cleanRed}｜之後跟上 ${h.followers} 人｜開局資訊${h.factAt?'第 '+h.factAt+' 格公開':'沒公開'}
   私訊：${h.dm||'—'}${h.leaked?'（被截圖）':''}｜投票：${h.vote||'—'}｜熱格平均 ${h.hotS??'-'}s／一般格 ${h.normS??'-'}s`).join('\n');
 }
 function currentSession(){
@@ -1751,7 +1779,7 @@ function saveSession(){ try{ let a=loadSessions(); a=a.filter(x=>x.id!==S.id); a
 function loadSessions(){ try{ return JSON.parse(localStorage.getItem('manyipai_sessions')||'[]').filter(x=>x.humans); }catch(e){ return []; } }
 const csvRow = a => a.map(v=>`"${String(v??'').replace(/"/g,'""')}"`).join(',');
 function toCSV(sessions){
-  const H=['場次','時間','模式','格','熱格','順位','行動者','真人','行動者身分','行動','顏色','指向','留言','前方紅色數','前方多數指向','前方多數數量','前方黃','前方綠','分享查到的','逾時','決定毫秒','結局','程度'];
+  const H=['場次','時間','模式','格','熱格','順位','行動者','真人','行動者開局資訊','行動','顏色','指向','留言','前方紅色數','前方多數指向','前方多數數量','前方黃','前方綠','分享查到的','逾時','決定毫秒','結局','程度'];
   const AC={say:'說',chk:'查',spr:'傳',wait:'等',vote:'投票',dm:'私訊回覆',leak:'私訊被截圖'}, CL={red:'紅',yel:'黃',grn:'綠'};
   const rows=[H.join(',')];
   sessions.forEach(s=>s.log.forEach(e=>{ const p=s.players.find(x=>x.id===e.who)||{};
@@ -1759,10 +1787,10 @@ function toCSV(sessions){
   return '﻿'+rows.join('\n');
 }
 function toSumCSV(sessions){
-  const H=['場次','時間','模式','玩家','身分卡','賽前_判斷速度','賽前_從眾','賽後_判斷速度','賽後_從眾','第一次放紅色(格)','壓力下跟隨','無壓力時放紅','之後跟上人數','私訊回覆','私訊被截圖','投票','私人目標','熱格平均秒','一般格平均秒','逾時次數','結局','程度','截圖最遠','完整資訊到','溫度最高','總分鐘','訪談題目與回答'];
+  const H=['場次','時間','模式','玩家','開局資訊','賽前_判斷速度','賽前_從眾','賽後_判斷速度','賽後_從眾','第一次放紅色(格)','壓力下跟隨','無壓力時放紅','之後跟上人數','私訊回覆','私訊被截圖','投票','開局資訊公開(格)','熱格平均秒','一般格平均秒','逾時次數','結局','程度','截圖最遠','完整資訊到','溫度最高','總分鐘','訪談題目與回答'];
   const rows=[H.join(',')];
   sessions.forEach(s=>{ const o=s.summary; const qa=(s.ivq||[]).map(q=>`【${q.q}】${(s.answers||{})[q.id]||''}`).join('\n');
-    o.humans.forEach(h=>rows.push(csvRow([s.id,s.at,o.mode,h.name,h.ident,h.pre.q1,h.pre.q2,h.post.q1,h.post.q2,h.myFirstRed??'',h.follow,h.cleanRed,h.followers,h.dm,h.leaked?1:0,h.vote,h.goal?'達成':'未達成',h.hotS??'',h.normS??'',h.timeouts,o.ending,o.level,o.gray,o.white,o.heatPeak,o.minutes,qa]))); });
+    o.humans.forEach(h=>rows.push(csvRow([s.id,s.at,o.mode,h.name,h.ident,h.pre.q1,h.pre.q2,h.post.q1,h.post.q2,h.myFirstRed??'',h.follow,h.cleanRed,h.followers,h.dm,h.leaked?1:0,h.vote,h.factAt??'',h.hotS??'',h.normS??'',h.timeouts,o.ending,o.level,o.gray,o.white,o.heatPeak,o.minutes,qa]))); });
   return '﻿'+rows.join('\n');
 }
 function download(name,text){ const a=document.createElement('a'); a.href=URL.createObjectURL(new Blob([text],{type:'text/csv'})); a.download=name; a.click(); setTimeout(()=>URL.revokeObjectURL(a.href),1000); }
@@ -1776,7 +1804,7 @@ function setupPlayers(names){
   const seats=[]; const hq=[...hs], nq=[...npcs];
   while(hq.length||nq.length){ if(hq.length) seats.push(hq.shift()); if(nq.length) seats.push(nq.shift()); }
   const ids=[...IDS].sort(()=>rng()-.5);
-  S.players=seats.map((p,i)=>({...p,ident:ids[i],susp:{晴:0,希:0},notes:[],pre:{},post:{},
+  S.players=seats.map((p,i)=>({...p,ident:ids[i],susp:{晴:0,希:0},notes:[{g:0,s:ids[i].know,shared:false}],pre:{},post:{},
     tok:p.isMe?'你':p.isHuman?p.name.slice(0,1):p.name.slice(1,2)}));
   S.first=Math.floor(rng()*S.players.length);
   $('#tbllbl').textContent=`同桌的 ${S.players.length} 個人（本格行動順序）`;
@@ -1794,12 +1822,16 @@ function intro(){
         <div class="cv-q">她是在說妍希嗎？</div>
       </div>
       <p class="cv-line">截圖是真的。<br>接下來發生的事，也是。</p>
-      <div class="cv-meta"><span>👥 1 人或 2–6 人同機</span><span>⏱ 約 10 分鐘</span><span>🎭 每人一張祕密身分</span></div>
+      <div class="cv-meta"><span>👥 1 人或 2–6 人同機</span><span>⏱ 約 10 分鐘</span><span>🔒 每人多知道一件事</span></div>
       <button class="btn pri full" id="go">開始</button>
       <button class="btn full" id="goShow" style="margin-top:10px;background:transparent;color:#F3EEE6;border-color:rgba(255,255,255,.35)">▶ 看展示版（自動播放，不用操作）</button>
       <button class="btn full" id="goSpec" style="margin-top:10px;background:transparent;color:#C9D4E0;border-color:rgba(255,255,255,.2)">📖 規格說明（組員看這裡）</button>
       <details><summary>給訪談員（請在受訪者開始前看）</summary>
-        <p class="mini">1. 把裝置交給受訪者，<b>不要解釋規則、不要提示答案</b>，遊戲會自己帶。<br>2. 觀察他在哪一格停下來、皺眉、笑、說話，記下格數。<br>3. 多人同機：2–6 人圍著一台平板或手機，輪流操作；需要私人畫面時遊戲會請其他人轉開。<br>4. 結束後會出現依這局數據自動帶入的訪談題目。<br>5. 紀錄只存在這台裝置，可在結尾或這裡下載 CSV。</p>
+        <p class="mini"><b>① 開場這樣說：</b>「這是一個發生在班群裡的故事遊戲，想看大家實際會怎麼玩，沒有對錯，也不是考試。不會記你的名字，隨時可以停。可以錄音嗎？只給組內整理。」<br><span style="color:#9A3412">不要提</span>：網路霸凌、查證、慢一拍、媒體素養。<br>
+<b>② 開始 → 選「🙂 單人體驗」</b>，把裝置交給他。安靜坐旁邊：不提示、不解釋劇情，也不要請他邊玩邊講。看不懂規則可以回答。<br>
+<b>③ 回放結束</b>：先別問，等他自己開口，第一句話逐字記下。<br>
+<b>④ 最後一頁按「給訪談員 →」</b>：題目已經依這局自動產生，照順序問、打在格子裡；頁面下方有問卷 QR 和場次編號。<br>
+<b>⑤ 結束</b>：按下載兩份 CSV，交給 Chui。紀錄只存在這台裝置。</p>
         <p class="mini">這台裝置目前存了 <b>${n}</b> 場紀錄。${n?'<button class="btn" id="dlall" style="padding:6px 10px;font-size:13px">下載全部紀錄</button>':''}</p>
       </details>
       <p class="care">內容涉及校園網路霸凌情境，所有人物皆為虛構。任何時候都可以停下來。想找人聊聊：安心專線 1925（24 小時）｜教育部反霸凌專線 0800-200-885</p>
@@ -1861,24 +1893,22 @@ function intro(){
       <p class="mini" style="margin:4px 0 0">代幣放在桌上，後面的人都看得到。每一格的第一位會輪流換人。</p></div>
       <div class="card"><b>這局還會出現</b><div class="badges"><span>🔥 熱格：每人只有 10 秒</span><span>💬 私訊：有人會私下問你</span><span>📊 投票：班群會發起投票</span><span>🌡️ 班群溫度：越熱，越多人跟著罵</span></div></div>
       <div class="card"><b>怎樣算贏？</b><p class="mini" style="margin:4px 0 0">這局沒有分數，也沒有標準答案。結局由整桌一起決定——真相出來以前，大家做了什麼。結束後，${solo()?'你':'你們'}會看到自己。</p></div>
-      <button class="btn pri full" id="go" style="font-size:17px;padding:14px">${solo()?'抽我的身分卡':'開始輪流抽身分卡'}</button></div></div>`;
+      <button class="btn pri full" id="go" style="font-size:17px;padding:14px">${solo()?'看我知道的事':'開始輪流看'}</button></div></div>`;
       $('#go').onclick=pOnboard; autoClick('#go',9000);
     };
     const pOnboard=async()=>{
       for(const h of humans()){
-        await handPage(h,'抽身分卡');
-        if(S.research) h.pre=await askQs(h,PRE_QS,'開始前，先回答兩題','憑直覺選，沒有對錯。','下一步：抽身分卡');
-        await new Promise(r=>{ ov.innerHTML=`<div class="ov"><div class="pg"><div class="kick">${solo()?'':esc(h.em+' '+h.name+'｜')}抽一張身分卡</div>
-          <p class="sub">在這個故事裡，${solo()?'你':'你'}不是「正在上課的自己」，而是班上的某個人。</p>
+        await handPage(h,'看你知道的事');
+        if(S.research) h.pre=await askQs(h,PRE_QS,'開始前，先回答兩題','憑直覺選，沒有對錯。','下一步：看你知道的事');
+        await new Promise(r=>{ ov.innerHTML=`<div class="ov"><div class="pg"><div class="kick">${solo()?'':esc(h.em+' '+h.name+'｜')}只有你知道</div>
           <div class="idc" id="idc"><div class="in"><div class="f">點一下翻開<br><span style="font-size:13px;font-weight:400;opacity:.8">只有${solo()?'你':esc(h.name)}知道</span></div>
-            <div class="b"><div class="kick">你是</div><div class="t">${h.ident.t}</div>
-              <div class="r"><b>你知道的事</b>${h.ident.know}</div>
-              <div class="r"><b>你的私人目標（不計分）</b>${h.ident.goal}</div></div></div></div>
-          <p class="mini" style="text-align:center">其他人也各有一張，遊戲結束才會揭曉。玩到一半忘了，可以按上方「🎭 身分・筆記」。</p>
-          <button class="btn pri full hidden" id="go">${solo()?'記住了，進入班群':'記住了，把裝置交出去'}</button></div></div>`;
+            <div class="b"><div class="kick">你知道的事</div><div class="r" style="font-size:17px;line-height:1.6">${h.ident.know}</div>
+              <div class="r mini">這件事不一定完整。要不要講出來、什麼時候講，由你決定。</div></div></div></div>
+          <p class="mini" style="text-align:center">其他人也各知道一件不一樣的事。玩到一半忘了，可以按上方「🔒 只有我知道」。</p>
+          <button class="btn pri full hidden" id="go">${solo()?'記住了，進入班群':'記住了，交給下一位'}</button></div></div>`;
           $('#idc').onclick=()=>{ $('#idc').classList.add('flip'); snd('good'); setTimeout(()=>{ const b=$('#go'); if(b) b.classList.remove('hidden'); },500); };
           $('#go').onclick=r;
-          if(S.show){ cap('每個人抽一張祕密身分卡，上面有私人目標——製造真實的拉力。',6000); autoClick('#idc',1800).then(()=>autoClick('#go',4800)); } });
+          if(S.show){ cap('每個人開局都多知道一件事，只有自己看得到。',6000); autoClick('#idc',1800).then(()=>autoClick('#go',4800)); } });
       }
       if(!solo()&&!S.show) await new Promise(r=>{ ov.innerHTML=`<div class="ov"><div class="pg hand" style="padding-top:14vh"><div class="em">📱</div><h2>把裝置放在桌子中間</h2><p class="sub">接下來大家一起看班群。輪到誰，誰就伸手操作；「說」的時候請直接開口講。</p>${S.physical?`<div class="card" style="text-align:left"><b>桌上準備</b><p class="mini" style="margin:4px 0 0">每人拿紅、黃、綠代幣各一顆。🚩首位標記先交給 <b>${esc(S.players[S.first].name)}</b>。棋子放在第 1 格。</p></div>`:''}<button class="btn pri full" id="go">進入班群</button></div></div>`; $('#go').onclick=r; });
       ov.innerHTML=''; if(!S.show) $('#idpill').classList.remove('hidden'); res();
@@ -1956,13 +1986,11 @@ function setup(){
   $('#pause').onclick=()=>{ S.paused=!S.paused; $('#pause').textContent=S.paused?'▶ 繼續':'⏸ 暫停'; $('#pause').classList.toggle('on',S.paused); };
   $('#speed').onclick=()=>{ const on=$('#speed').classList.toggle('on'); SPEED=on?0.35:1; };
   $('#idpill').onclick=async()=>{
-    const show=async h=>{ const ok=goalCheck(h);
-      const notes=h.notes.length?h.notes.map(n=>`<div class="dm" style="margin:6px 0;padding:7px 10px;font-size:13.5px">第 ${n.g} 格｜${esc(n.s)}${n.shared?'（已公開）':''}</div>`).join(''):'<p class="mini">還沒有。用「查」問到的事會記在這裡。</p>';
-      await holdCard(h,`<h3 style="font-size:20px;margin:8px 0 10px">${h.ident.t}</h3><p><b class="mini">你知道的事</b><br>${h.ident.know}</p>
-        <p><b class="mini">你的私人目標（不計分）</b><br>${h.ident.goal}<br><span class="${ok?'ok':'mini'}">${ok?'目前：✓ 達成':'目前：還沒達成'}</span></p>
-        <p style="margin-bottom:2px"><b class="mini">你私下查到的</b></p>${notes}`,'回到班群'); };
+    const show=async h=>{
+      const notes=h.notes.length?h.notes.map(n=>`<div class="dm" style="margin:6px 0;padding:7px 10px;font-size:13.5px">${n.g?'第 '+n.g+' 格':'開局就知道'}｜${esc(n.s)}${n.shared?'（已公開）':''}</div>`).join(''):'<p class="mini">還沒有。用「查」問到的事會記在這裡。</p>';
+      await holdCard(h,`<p style="margin-bottom:2px"><b class="mini">只有你知道的</b></p>${notes}<p class="mini">想讓大家知道，要用「說」講出來。</p>`,'回到班群'); };
     if(solo()) return show(S.players[0]);
-    showModal(`<div class="kick">誰要看自己的身分卡？</div>${humans().map(h=>`<button class="vbtn yel" data-id="${h.id}" style="border-color:var(--line);color:var(--ink)">${h.em} ${esc(h.name)}</button>`).join('')}<button class="btn ghost full" id="cx">取消</button>`,false,'modal2');
+    showModal(`<div class="kick">誰要看自己知道的事？</div>${humans().map(h=>`<button class="vbtn yel" data-id="${h.id}" style="border-color:var(--line);color:var(--ink)">${h.em} ${esc(h.name)}</button>`).join('')}<button class="btn ghost full" id="cx">取消</button>`,false,'modal2');
     $('#cx').onclick=()=>closeModal('modal2');
     document.querySelectorAll('#modal2 .vbtn').forEach(b=>b.onclick=()=>{ closeModal('modal2'); show(pById(b.dataset.id)); });
   };
